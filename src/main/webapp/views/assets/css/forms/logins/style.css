@@ -1,0 +1,220 @@
+/* Define root variables for consistent color usage */
+:root {
+    --primary-color: #183485; /* Bold blue */
+    --secondary-color: #f97316; /* Vibrant orange */
+    --background-color: #dbeafe; /* Light blue background */
+    --card-bg: #ffffff; /* White for card */
+    --text-dark: #1e293b; /* Dark slate for text */
+    --text-light: #64748b; /* Lighter slate for secondary text */
+    --error-color: #dc2626; /* Bold red for errors */
+    --hover-dark: #1e3a8a; /* Darker blue for hover */
+    --shadow-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Base styling with bold background */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background-color); /* Bold yet clean background */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Remove scrolling */
+}
+
+/* Back button in top-left corner */
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: var(--secondary-color); /* Vibrant orange */
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: #ea580c; /* Darker orange */
+    transform: translateY(-2px);
+}
+
+/* Login container centered */
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-color);
+    margin: 20px;
+}
+
+/* Form heading */
+form h2 {
+    text-align: center;
+    color: var(--primary-color); /* Bold blue */
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+form h2 span {
+    display: block;
+    font-size: 16px;
+    color: var(--text-light);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Input group */
+.input-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Input and select styling */
+input[type="email"],
+input[type="password"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(29, 78, 216, 0.3);
+    outline: none;
+}
+
+/* Smooth dropdown */
+select {
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="%231d4ed8" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 15px center;
+    background-size: 14px;
+    padding-right: 35px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+select:hover {
+    border-color: #93c5fd;
+    transform: scale(1.02);
+}
+
+/* Password toggle */
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 62%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 18px;
+    user-select: none;
+}
+
+/* Submit button */
+input[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: var(--hover-dark);
+    transform: scale(1.03);
+}
+
+/* Message styling */
+.message {
+    text-align: center;
+    margin: 15px 0;
+    color: var(--error-color);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Register link */
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.register-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: var(--hover-dark);
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container {
+        margin: 70px 15px 15px;
+        padding: 25px;
+    }
+
+    .back-btn {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+    }
+
+    form h2 {
+        font-size: 24px;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    select {
+        padding: 10px 12px;
+    }
+
+    input[type="submit"] {
+        padding: 12px;
+    }
+}
+

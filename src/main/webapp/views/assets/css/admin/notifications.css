@@ -1,0 +1,206 @@
+.notification-panel {
+    position: fixed;
+    top: 57%;
+    left: calc(50% + 125px); /* Half sidebar width (250px / 2) for default open state */
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 1100px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    padding: 24px;
+    z-index: 1000;
+    display: none;
+    max-height: 85vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.notification-panel::-webkit-scrollbar {
+    display: none;
+}
+
+.notification-content {
+    position: relative;
+    background: #ffffff; /* Block content above thead */
+}
+
+.close-btn {
+    position: absolute;
+    top: 9px; /* Panel padding (24px) + th padding (14px) */
+    right: 16px; /* Right edge of thead */
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #ffffff;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 7; /* Above sticky thead */
+}
+
+.close-btn:hover {
+    color: #f75555;
+    transform: scale(1.1);
+}
+
+.table-modern {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-modern thead tr {
+    position: sticky;
+    top: 0;
+    background: #6d28d9;
+    color: #ffffff;
+    z-index: 6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table-modern th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.table-modern td {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    color: #1e293b;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-modern td:last-child {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.table-modern tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.table-modern tbody tr:hover {
+    background: #f1f5f9;
+    transition: background 0.2s ease;
+}
+
+.unseen-row {
+    background: #dbeafe;
+    font-weight: 500;
+}
+
+.unseen-row td {
+    color: #1e40af;
+}
+
+.btn-approve {
+    background: #2dd4bf;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-approve:hover {
+    background: #14b8a6;
+    transform: translateY(-2px);
+}
+
+.btn-reject {
+    background: #f75555;
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.btn-reject:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .notification-panel {
+        width: 95%;
+        padding: 16px;
+        max-height: 80vh;
+        left: calc(50% + 40px); /* Half sidebar width (80px / 2) when collapsed */
+    }
+
+    .close-btn {
+        top: 32px; /* Panel padding (16px) + th padding (10px) */
+        right: 12px;
+        font-size: 1.1rem;
+    }
+
+    .table-modern th,
+    .table-modern td {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+
+    .table-modern td:last-child {
+        gap: 6px;
+    }
+
+    .btn-approve,
+    .btn-reject {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-panel {
+        padding: 12px;
+        max-height: 75vh;
+        left: calc(50% + 40px);
+    }
+
+    .close-btn {
+        top: 28px; /* Panel padding (12px) + th padding (8px) */
+        right: 10px;
+        font-size: 0.95rem;
+    }
+
+    .table-modern {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .table-modern th,
+    .table-modern td {
+        padding: 8px 10px;
+        font-size: 0.7rem;
+        min-width: 100px;
+    }
+
+    .table-modern td:last-child {
+        gap: 4px;
+    }
+
+    .btn-approve,
+    .btn-reject {
+        padding: 5px 10px;
+        font-size: 0.7rem;
+    }
+}

@@ -1,0 +1,128 @@
+/* Root Variables for Vibrant Colors */
+:root {
+    --primary-color: #7c3aed;
+    --secondary-color: #14b8a6;
+    --accent-color: #f472b6;
+    --background-color: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --border-color: #d1d5db;
+    --error-color: #f43f5e;
+    --success-color: #22c55e;
+    --hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    --transition: all 0.2s ease-in-out;
+}
+
+.create-project-container {
+    max-width: 960px;
+    margin: 32px auto;
+    padding: 24px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.create-project-container::-webkit-scrollbar {
+    display: none;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.back-btn {
+    padding: 8px 16px;
+    background: var(--secondary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.back-btn:hover {
+    background: #0d9488;
+    box-shadow: var(--hover-shadow);
+}
+
+.form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.form-group label {
+    width: 120px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9375rem;
+    padding-top: 10px;
+}
+
+.form-group label i {
+    color: var(--accent-color);
+    margin-right: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+    background: var(--background-color);
+    transition: var(--transition);
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 6px rgba(124, 58, 237, 0.2);
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.btn {
+    padding: 10px 24px;
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn:hover {
+    background: #ec4899;
+    box-shadow: var(--hover-shadow);
+}

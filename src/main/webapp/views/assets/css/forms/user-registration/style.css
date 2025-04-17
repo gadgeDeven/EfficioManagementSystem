@@ -1,0 +1,290 @@
+/* Root Variables for Consistent Colors */
+:root {
+    --primary-color: #183485; /* Bold blue */
+    --secondary-color: #f97316; /* Vibrant orange */
+    --background-color: #dbeafe; /* Strong light blue */
+    --card-bg: #ffffff; /* White for card */
+    --text-dark: #1e293b; /* Dark slate */
+    --text-light: #64748b; /* Lighter slate */
+    --error-color: #dc2626; /* Bold red */
+    --success-color: #16a34a; /* Green */
+    --hover-dark: #1e3a8a; /* Darker blue */
+    --shadow-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Base Styling */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--background-color);
+    overflow: hidden; /* No scrollbar on body */
+}
+
+/* Back Button */
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: #ea580c;
+    transform: translateY(-2px);
+}
+
+/* Register Container */
+.register-container {
+    width: 100%;
+    max-width: 500px; /* Kept as per your provided code */
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px var(--shadow-color);
+    margin: 20px auto; /* Centered horizontally */
+    height: calc(100vh - 80px); /* Adjusted for back button and padding */
+    overflow-y: auto; /* Scrollbar inside container */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Start from top for scrolling */
+}
+
+/* Form Styling */
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Reduced from 20px */
+}
+
+/* Form Heading */
+form h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin: 15px 0; /* Reduced from 30px margin-bottom, added top margin */
+    font-size: 28px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    padding-bottom: 10px; /* Added padding for underline effect */
+}
+
+form h2::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 3px;
+    background-color: var(--secondary-color);
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+form h2 span {
+    display: block;
+    font-size: 14px; /* Slightly reduced from 16px */
+    color: var(--text-light);
+    font-weight: 400;
+    text-transform: none;
+    margin-top: 5px; /* Added small margin for spacing */
+}
+
+/* Input Group */
+.input-group {
+    margin-bottom: 15px; /* Reduced from 25px */
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Input Fields */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(29, 78, 216, 0.3);
+    outline: none;
+}
+
+/* Dropdown */
+select {
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="%231d4ed8" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 15px center;
+    background-size: 14px;
+    padding-right: 35px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, transform 0.2s ease;
+}
+
+select:hover {
+    border-color: #93c5fd;
+    transform: scale(1.02);
+}
+
+/* Textarea */
+textarea {
+    resize: vertical;
+    min-height: 80px; /* Ensures textarea isn’t too small */
+}
+
+/* Password Toggle */
+.password-group {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 62%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--primary-color);
+    font-size: 18px;
+    user-select: none;
+}
+
+/* Submit Button */
+input[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: var(--hover-dark);
+    transform: scale(1.03);
+}
+
+/* Messages */
+.message {
+    text-align: center;
+    margin: 15px 0;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.success-message {
+    color: var(--success-color);
+    background-color: #dcfce7;
+}
+
+.error-message {
+    color: var(--error-color);
+    background-color: #fee2e2;
+    display: none; /* Hidden by default for client-side */
+}
+
+/* Login Link */
+.login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    color: var(--hover-dark);
+    text-decoration: underline;
+}
+
+/* Shake Animation */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.5s ease;
+}
+
+/* Input Error Styling */
+.input-error {
+    border-color: var(--error-color);
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .register-container {
+        margin: 70px 15px 15px;
+        padding: 25px;
+        height: calc(100vh - 90px); /* Adjusted for smaller screens */
+    }
+
+    .back-btn {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+    }
+
+    form h2 {
+        font-size: 24px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"],
+    select,
+    textarea {
+        padding: 10px 12px;
+    }
+
+    input[type="submit"] {
+        padding: 12px;
+    }
+}
