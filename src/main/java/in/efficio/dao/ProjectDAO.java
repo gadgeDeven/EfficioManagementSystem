@@ -9,11 +9,11 @@ import java.util.List;
 
 public class ProjectDAO {
 
-    public boolean createProject(Project project) {
+	public int createProject(Project project) {
         String query = "INSERT INTO project (project_name, description, start_date, end_date, status, priority, admin_id) " +
                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+             PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, project.getProjectName());
             ps.setString(2, project.getDescription());
             ps.setDate(3, project.getStartDate());
@@ -21,10 +21,17 @@ public class ProjectDAO {
             ps.setString(5, project.getStatus());
             ps.setString(6, project.getPriority());
             ps.setInt(7, project.getAdminId());
-            return ps.executeUpdate() > 0;
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the generated project_id
+                }
+            }
+            return -1; // Return -1 if insertion fails
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 

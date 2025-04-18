@@ -1,61 +1,41 @@
-/* Root Variables for Vibrant Colors */
 :root {
-    --primary-color: #7c3aed;
-    --secondary-color: #14b8a6;
-    --accent-color: #f472b6;
-    --background-color: #f1f5f9;
+    --primary-color: #4338ca;
+    --secondary-color: #047857;
+    --accent-color: #ea580c;
+    --background-color: #f9fafb;
     --card-bg: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
     --border-color: #d1d5db;
-    --error-color: #f43f5e;
-    --success-color: #22c55e;
-    --hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    --error-color: #dc2626;
+    --success-color: #16a34a;
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.12);
     --transition: all 0.2s ease-in-out;
 }
 
 .create-project-container {
-    max-width: 960px;
-    margin: 32px auto;
-    padding: 24px;
+    max-width: 800px;
+    margin: 48px auto;
+    padding: 32px;
     background: var(--card-bg);
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    overflow-y: auto;
-    scrollbar-width: none;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    z-index: 0;
 }
 
-.create-project-container::-webkit-scrollbar {
-    display: none;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.header h1 {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.back-btn {
-    padding: 8px 16px;
-    background: var(--secondary-color);
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.back-btn:hover {
-    background: #0d9488;
-    box-shadow: var(--hover-shadow);
+.create-project-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--card-bg);
+    z-index: -1;
+    border-radius: 12px;
 }
 
 .form-group {
@@ -66,63 +46,197 @@
 }
 
 .form-group label {
-    width: 120px;
+    width: 140px;
     font-weight: 500;
     color: var(--text-primary);
-    font-size: 0.9375rem;
+    font-size: 0.95rem;
     padding-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .form-group label i {
     color: var(--accent-color);
-    margin-right: 8px;
+    font-size: 1.1rem;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
     flex: 1;
-    padding: 10px;
+    padding: 10px 12px;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    font-size: 0.9375rem;
+    font-size: 0.95rem;
     color: var(--text-primary);
     background: var(--background-color);
     transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-    outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 6px rgba(124, 58, 237, 0.2);
+    box-shadow: var(--shadow-md);
+    outline: none;
+}
+
+.form-group input[type="date"].date-input {
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    z-index: 1;
+}
+
+.form-group input[type="date"].date-input:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.form-group input[type="date"].date-input:focus {
+    border-color: var(--secondary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 6px;
+    filter: invert(30%) sepia(80%) saturate(1500%) hue-rotate(160deg) brightness(90%) contrast(95%);
+}
+
+.teamleader-container {
+    flex: 1;
+}
+
+.selected-teamleaders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    min-height: 40px;
+    padding: 8px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.selected-teamleaders .no-teamleaders {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-style: italic;
+    padding: 4px 8px;
+}
+
+.teamleader-tag {
+    display: inline-flex;
+    align-items: center;
+    background: var(--primary-color);
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+    gap: 8px;
+    min-width: 100px; /* Ensure enough space for name */
+}
+
+.teamleader-tag .teamleader-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.teamleader-tag .teamleader-name i {
+    font-size: 0.9rem;
+}
+
+.teamleader-tag .remove-teamleader {
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+}
+
+.teamleader-tag .remove-teamleader:hover {
+    color: var(--error-color);
+}
+
+.form-group select.teamleader-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--background-color);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-group select.teamleader-select:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.form-group select.teamleader-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: var(--shadow-lg);
 }
 
 .form-group textarea {
     height: 120px;
     resize: vertical;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.form-group select:not(.teamleader-select) {
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .form-actions {
     display: flex;
     justify-content: center;
-    margin-top: 24px;
+    margin-top: 28px;
 }
 
 .btn {
-    padding: 10px 24px;
-    background: var(--accent-color);
+    padding: 10px 28px;
+    background: var(--secondary-color);
     color: #ffffff;
     border: none;
     border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn:hover {
-    background: #ec4899;
-    box-shadow: var(--hover-shadow);
+    background: #065f46;
+    box-shadow: var(--shadow-lg);
 }

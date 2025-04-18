@@ -150,20 +150,36 @@ public class ProjectServlet extends HttpServlet {
         }
 
         try {
-            if ("createProject".equals(action)) {
-                Project project = new Project();
-                project.setProjectName(request.getParameter("projectName"));
-                project.setDescription(request.getParameter("description"));
-                project.setStartDate(Date.valueOf(request.getParameter("startDate")));
-                project.setEndDate(Date.valueOf(request.getParameter("endDate")));
-                project.setStatus("Ongoing");
-                project.setPriority(request.getParameter("priority"));
-                project.setAdminId(1);
-                projectDAO.createProject(project);
-                updateStats(stats);
-                session.setAttribute("stats", stats);
-                response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
-            } else if ("complete".equals(action)) {
+        	if ("createProject".equals(action)) {
+        	    Project project = new Project();
+        	    project.setProjectName(request.getParameter("projectName"));
+        	    project.setDescription(request.getParameter("description"));
+        	    project.setStartDate(Date.valueOf(request.getParameter("startDate")));
+        	    project.setEndDate(Date.valueOf(request.getParameter("endDate")));
+        	    project.setStatus("Ongoing");
+        	    project.setPriority(request.getParameter("priority"));
+        	    project.setAdminId(1);
+
+        	    int projectId = projectDAO.createProject(project);
+        	    if (projectId == -1) {
+        	        session.setAttribute("error", "Failed to create project.");
+        	        response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
+        	        return;
+        	    }
+
+        	    String[] teamLeaderIds = request.getParameterValues("teamLeaderIds");
+        	    if (teamLeaderIds != null) {
+        	        for (String tlId : teamLeaderIds) {
+        	            int teamLeaderId = Integer.parseInt(tlId);
+        	            projectDAO.assignTeamLeader(projectId, teamLeaderId);
+        	        }
+        	    }
+
+        	    updateStats(stats);
+        	    session.setAttribute("stats", stats);
+        	    session.setAttribute("message", "Project created successfully with ID: " + projectId);
+        	    response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
+        	}else if ("complete".equals(action)) {
                 int projectId = Integer.parseInt(request.getParameter("projectId"));
                 Project project = projectDAO.getProjectById(projectId);
                 if ("Ongoing".equals(project.getStatus())) {
