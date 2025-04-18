@@ -1,6 +1,7 @@
 package in.efficio.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class TeamLeader {
     private int teamleader_id;
@@ -12,6 +13,7 @@ public class TeamLeader {
     private String assign_project_name;
     private int assignProject_id;
     private String status;
+    private List<Project> projects; // Added field for projects
 
     // Getters and Setters
     public int getTeamleader_id() {
@@ -56,17 +58,22 @@ public class TeamLeader {
     public void setAssign_project_name(String assign_project_name) {
         this.assign_project_name = assign_project_name;
     }
-    
     public int getAssignProject_id() {
-		return assignProject_id;
-	}
-	public void setAssignProject_id(int assignProject_id) {
-		this.assignProject_id = assignProject_id;
-	}
-	public String getStatus() {
+        return assignProject_id;
+    }
+    public void setAssignProject_id(int assignProject_id) {
+        this.assignProject_id = assignProject_id;
+    }
+    public String getStatus() {
         return status;
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+    public List<Project> getProjects() {
+        return projects;
+    }
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 }

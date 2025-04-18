@@ -60,20 +60,31 @@ body {
     background: var(--card-bg);
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    display: flex;
+}
+
+.profile-details {
+    display: grid;
+    grid-template-columns: 1fr auto; /* Details take available space, photo fixed on right */
     gap: 32px;
-    align-items: flex-start;
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+.profile-details-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .profile-photo {
-    flex: 0 0 120px;
-    height: 120px;
+    width: 160px; /* Increased size */
+    height: 160px;
     background: var(--border-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.25rem;
     color: var(--text-secondary);
     overflow: hidden;
     border: 4px solid var(--primary-color);
@@ -86,30 +97,26 @@ body {
 }
 
 .profile-photo i {
-    font-size: 2rem;
+    font-size: 2.5rem; /* Adjusted for larger photo */
 }
 
-.profile-details {
-    flex: 1;
-}
-
-.profile-details p {
+.profile-details-content p {
     font-size: 1rem;
     color: var(--text-primary);
-    margin: 12px 0;
+    margin: 0;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.profile-details p strong {
+.profile-details-content p strong {
     color: var(--primary-color);
     font-weight: 600;
     min-width: 120px;
     display: inline-block;
 }
 
-.profile-details p i {
+.profile-details-content p i {
     color: var(--secondary-color);
     font-size: 1.125rem;
 }
@@ -153,7 +160,7 @@ body {
 .project-table th,
 .project-table td {
     padding: 14px 20px;
-    text-align: left;
+    text-align: center; /* Restored center alignment */
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
     font-size: 0.9375rem;
@@ -217,7 +224,7 @@ body {
     color: var(--error-color);
     text-align: center;
     margin: 40px auto;
-    padding:roz 20px;
+    padding: 20px; /* Fixed typo */
     background: #fff1f2;
     border-radius: 12px;
     font-weight: 600;
@@ -244,11 +251,15 @@ body {
     }
 
     .profile-photo {
-        flex: 0 0 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
 
-    .profile-details p {
+    .profile-photo i {
+        font-size: 2rem;
+    }
+
+    .profile-details-content p {
         font-size: 0.9375rem;
     }
 
@@ -269,18 +280,22 @@ body {
         padding: 0 16px;
     }
 
-    .profile-content {
-        flex-direction: column;
-        gap: 24px;
-        padding: 20px;
+    .profile-details {
+        grid-template-columns: 1fr; /* Stack vertically */
+        gap: 16px;
     }
 
     .profile-photo {
-        flex: 0 0 80px;
-        height: 80px;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto; /* Center photo */
     }
 
-    .profile-details p {
+    .profile-photo i {
+        font-size: 1.75rem;
+    }
+
+    .profile-details-content p {
         font-size: 0.875rem;
     }
 
@@ -320,11 +335,15 @@ body {
     }
 
     .profile-photo {
-        flex: 0 0 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
     }
 
-    .profile-details p {
+    .profile-photo i {
+        font-size: 1.5rem;
+    }
+
+    .profile-details-content p {
         font-size: 0.8125rem;
     }
 
