@@ -118,18 +118,30 @@ public class ProjectDAO {
             e.printStackTrace();
         }
     }
-
-    public int getProjectProgress(int projectId) {
-        String query = "SELECT AVG(progress_percentage) FROM task WHERE project_id = ?";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, projectId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1);
+    
+    public void updateProjectProgress(int projectId, int progress) {
+        String sql = "UPDATE project SET progress = ? WHERE project_id = ?";
+        try (Connection conn =  DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, progress);
+            stmt.setInt(2, projectId);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0;
+    }
+
+    public int getProjectProgress(int projectId) {
+        String sql = "SELECT progress FROM project WHERE project_id = ?";
+        try (Connection conn = DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, projectId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("progress");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0; // Default to 0 if not found or error
     }
 
     public List<Project> getProjectsByStatus(String status) {

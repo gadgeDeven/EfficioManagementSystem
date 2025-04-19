@@ -271,6 +271,18 @@ tr:hover td {
     align-items: center;
     gap: 16px;
     justify-content: center;
+    width: 100%;
+    max-width: 700px;
+    background: var(--list-card-bg);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid var(--proj-details-accent);
+    transition: background 0.2s ease;
+}
+
+.proj-progress-bar:hover {
+    background: #f7fee7;
 }
 
 .proj-progress-bar label {
@@ -279,7 +291,7 @@ tr:hover td {
     color: var(--proj-details-primary);
 }
 
-.proj-progress-bar .progress {
+.proj-progress-bar .progress-container {
     flex: 1;
     height: 14px;
     background: var(--list-border-color);
@@ -287,7 +299,7 @@ tr:hover td {
     overflow: hidden;
 }
 
-.proj-progress-bar .progress div {
+.proj-progress-bar .progress {
     height: 100%;
     background: var(--proj-details-accent);
     transition: width 0.3s ease;

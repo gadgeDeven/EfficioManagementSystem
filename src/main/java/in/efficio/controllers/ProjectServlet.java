@@ -184,11 +184,16 @@ public class ProjectServlet extends HttpServlet {
                 Project project = projectDAO.getProjectById(projectId);
                 if ("Ongoing".equals(project.getStatus())) {
                     projectDAO.updateProjectStatus(projectId, "Completed");
+                    projectDAO.updateProjectProgress(projectId, 100); // Set progress to 100%
                     updateStats(stats);
                     session.setAttribute("stats", stats);
+                    session.setAttribute("message", "Project marked as completed!");
+                } else {
+                    session.setAttribute("error", "Project is already completed.");
                 }
-                response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
-            } else if ("updateProject".equals(action)) {
+                // Redirect to project details page
+                response.sendRedirect(request.getContextPath() + "/Projects?contentType=view-projects&action=view&projectId=" + projectId);
+            }else if ("updateProject".equals(action)) {
                 int projectId = Integer.parseInt(request.getParameter("projectId"));
                 Project project = projectDAO.getProjectById(projectId);
                 project.setProjectName(request.getParameter("projectName"));
