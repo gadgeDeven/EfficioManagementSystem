@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/view-projects.css">
 </head>
 <body>
-    <div class="project-list-container">
+    <div class="proj-list-container">
         <% if (!"view".equals(request.getParameter("action")) && !"edit".equals(request.getParameter("action"))) { %>
             <% List<Project> projects = (List<Project>) request.getAttribute("projects"); %>
             <% if (projects != null && !projects.isEmpty()) { %>
@@ -34,13 +34,13 @@
                             <td><%= project.getStatus() %></td>
                             <td><%= project.getPriority() %></td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=view&projectId=<%= project.getProjectId() %>" class="btn"><i class="fas fa-eye"></i> View</a>
+                                <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=view&projectId=<%= project.getProjectId() %>" class="proj-btn"><i class="fas fa-eye"></i> View</a>
                             </td>
                         </tr>
                     <% } %>
                 </table>
             <% } else { %>
-                <p><i class="fas fa-exclamation-circle"></i> No projects found.</p>
+                <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> No projects found.</p>
             <% } %>
         <% } else if ("view".equals(request.getParameter("action"))) { 
             Project project = (Project) request.getAttribute("projectDetails");
@@ -49,68 +49,70 @@
             Integer progress = (Integer) request.getAttribute("progress");
             String from = (String) request.getAttribute("from");
         %>
-            <div class="project-details">
+            <div class="proj-details">
                 <h1><i class="fas fa-project-diagram"></i> <%= project.getProjectName() %></h1>
-                <button class="back-btn" onclick="window.location.href='<%= "projectsList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=projectsList" 
+                <button class="proj-back-btn" onclick="window.location.href='<%= "projectsList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=projectsList" 
                     : "pendingList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=pendingList" 
                     : "completedList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=completedList" 
                     : request.getContextPath() + "/Projects?contentType=view-projects" %>'"><i class="fas fa-arrow-left"></i> Back</button>
-                <div class="details-grid">
-                    <p><strong><i class="fas fa-info-circle"></i> Description:</strong> <%= project.getDescription() %></p>
-                    <p><strong><i class="fas fa-calendar-alt"></i> Start Date:</strong> <%= project.getStartDate() %></p>
-                    <p><strong><i class="fas fa-calendar-check"></i> End Date:</strong> <%= project.getEndDate() %></p>
-                    <p><strong><i class="fas fa-tasks"></i> Status:</strong> <%= project.getStatus() %></p>
-                    <p><strong><i class="fas fa-exclamation-triangle"></i> Priority:</strong> <%= project.getPriority() %></p>
-                    <div class="progress-bar">
+                <div class="proj-details-grid">
+                    <p class="proj-description"><strong><i class="fas fa-info-circle"></i> Description:</strong> <%= project.getDescription() %></p>
+                    <div class="proj-date-status-grid">
+                        <p><strong><i class="fas fa-calendar-alt"></i> Start Date:</strong> <%= project.getStartDate() %></p>
+                        <p><strong><i class="fas fa-calendar-check"></i> End Date:</strong> <%= project.getEndDate() %></p>
+                        <p><strong><i class="fas fa-tasks"></i> Status:</strong> <%= project.getStatus() %></p>
+                        <p><strong><i class="fas fa-exclamation-triangle"></i> Priority:</strong> <%= project.getPriority() %></p>
+                    </div>
+                    <div class="proj-progress-bar">
                         <label><i class="fas fa-chart-line"></i> Progress:</label>
                         <div class="progress" style="width: <%= progress %>%;"></div>
                         <span><%= progress %>%</span>
                     </div>
                 </div>
                 <h3><i class="fas fa-user-tie"></i> Team Leaders</h3>
-                <ul>
+                <div class="proj-team-list">
                     <% for (TeamLeader tl : teamLeaders) { %>
-                        <li><a href="${pageContext.request.contextPath}/TeamLeaders?contentType=teamleader-profile&id=<%= tl.getTeamleader_id() %>&from=project-view&projectId=<%= project.getProjectId() %>"><%= tl.getName() %></a></li>
+                        <div class="proj-team-item"><a href="${pageContext.request.contextPath}/TeamLeaders?contentType=teamleader-profile&id=<%= tl.getTeamleader_id() %>&from=project-view&projectId=<%= project.getProjectId() %>"><%= tl.getName() %></a></div>
                     <% } %>
-                </ul>
+                </div>
                 <h3><i class="fas fa-users"></i> Employees</h3>
-                <ul>
+                <div class="proj-employee-list">
                     <% for (Employee emp : employees) { %>
-                        <li><a href="${pageContext.request.contextPath}/Employees?contentType=employee-profile&id=<%= emp.getEmployee_id() %>&from=project-view&projectId=<%= project.getProjectId() %>"><%= emp.getName() %></a></li>
+                        <div class="proj-employee-item"><a href="${pageContext.request.contextPath}/Employees?contentType=employee-profile&id=<%= emp.getEmployee_id() %>&from=project-view&projectId=<%= project.getProjectId() %>"><%= emp.getName() %></a></div>
                     <% } %>
-                </ul>
-                <div class="actions">
+                </div>
+                <div class="proj-actions">
                     <form action="${pageContext.request.contextPath}/DeleteProject" method="post" style="display:inline;">
                         <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                        <button type="submit" class="btn danger" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i> Delete</button>
+                        <button type="submit" class="proj-btn proj-danger" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i> Delete</button>
                     </form>
-                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=edit&projectId=<%= project.getProjectId() %>" class="btn"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=edit&projectId=<%= project.getProjectId() %>" class="proj-btn"><i class="fas fa-edit"></i> Edit</a>
                     <form action="${pageContext.request.contextPath}/Projects" method="post" style="display:inline;">
                         <input type="hidden" name="action" value="complete">
                         <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                        <button type="submit" class="btn success"><i class="fas fa-check"></i> Complete</button>
+                        <button type="submit" class="proj-btn proj-success"><i class="fas fa-check"></i> Complete</button>
                     </form>
-                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=download&projectId=<%= project.getProjectId() %>" class="btn"><i class="fas fa-download"></i> Download</a>
+                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=download&projectId=<%= project.getProjectId() %>" class="proj-btn"><i class="fas fa-download"></i> Download</a>
                 </div>
             </div>
         <% } else if ("edit".equals(request.getParameter("action"))) { 
             Project project = (Project) request.getAttribute("projectDetails");
         %>
-            <div class="edit-project">
+            <div class="proj-edit">
                 <h1><i class="fas fa-edit"></i> Edit <%= project.getProjectName() %></h1>
-                <button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/Projects?contentType=view-projects'"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/Projects?contentType=view-projects'"><i class="fas fa-arrow-left"></i> Back</button>
                 <form action="${pageContext.request.contextPath}/Projects" method="post">
                     <input type="hidden" name="action" value="updateProject">
                     <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
-                    <div class="form-group">
+                    <div class="proj-form-group">
                         <label><i class="fas fa-project-diagram"></i> Project Name:</label>
                         <input type="text" name="projectName" value="<%= project.getProjectName() %>" required>
                     </div>
-                    <div class="form-group">
+                    <div class="proj-form-group">
                         <label><i class="fas fa-info-circle"></i> Description:</label>
                         <textarea name="description" required><%= project.getDescription() %></textarea>
                     </div>
-                    <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+                    <button type="submit" class="proj-btn"><i class="fas fa-save"></i> Save Changes</button>
                 </form>
             </div>
         <% } %>

@@ -2,7 +2,7 @@
 <%@ page import="java.util.List, in.efficio.model.PendingRegistration, in.efficio.dao.PendingRegistrationDAO"%>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/notifications.css">
-<script src="${pageContext.request.contextPath}/views/assets/js/admin/notifications.js"></script>
+
 
 <div class="notification-content">
     <button class="close-btn" id="closeNotification"><i class="fas fa-times"></i></button>
@@ -50,3 +50,4 @@
         </tbody>
     </table>
 </div>
+<script src="${pageContext.request.contextPath}/views/assets/js/admin/notifications.js"></script>
