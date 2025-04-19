@@ -47,14 +47,22 @@
             List<TeamLeader> teamLeaders = (List<TeamLeader>) request.getAttribute("teamLeaders");
             List<Employee> employees = (List<Employee>) request.getAttribute("employees");
             Integer progress = (Integer) request.getAttribute("progress");
-            String from = (String) request.getAttribute("from");
+            String from = request.getParameter("from");
+            String id = request.getParameter("id");
         %>
             <div class="proj-details">
-                <h1><i class="fas fa-project-diagram"></i> <%= project.getProjectName() %></h1>
-                <button class="proj-back-btn" onclick="window.location.href='<%= "projectsList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=projectsList" 
-                    : "pendingList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=pendingList" 
-                    : "completedList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=completedList" 
-                    : request.getContextPath() + "/Projects?contentType=view-projects" %>'"><i class="fas fa-arrow-left"></i> Back</button>
+                <div class="proj-header">
+                    <button class="proj-back-btn" onclick="window.location.href='<%= 
+                        "projectsList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=projectsList" 
+                        : "pendingList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=pendingList" 
+                        : "completedList".equals(from) ? request.getContextPath() + "/DashboardServlet?contentType=completedList" 
+                        : "employee-profile".equals(from) ? request.getContextPath() + "/Employees?contentType=employee-profile&id=" + (id != null ? id : "") 
+                        : "view-employees".equals(from) ? request.getContextPath() + "/Employees?contentType=view-employees" 
+                        : "teamleader-profile".equals(from) ? request.getContextPath() + "/TeamLeaders?contentType=teamleader-profile&id=" + (id != null ? id : "") 
+                        : "view-teamleaders".equals(from) ? request.getContextPath() + "/TeamLeaders?contentType=view-teamleaders" 
+                        : request.getContextPath() + "/Projects?contentType=view-projects" %>'"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h1><i class="fas fa-project-diagram"></i> <%= project.getProjectName() %></h1>
+                </div>
                 <div class="proj-details-grid">
                     <p class="proj-description"><strong><i class="fas fa-info-circle"></i> Description:</strong> <%= project.getDescription() %></p>
                     <div class="proj-date-status-grid">
@@ -86,7 +94,7 @@
                         <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
                         <button type="submit" class="proj-btn proj-danger" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i> Delete</button>
                     </form>
-                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=edit&projectId=<%= project.getProjectId() %>" class="proj-btn"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="${pageContext.request.contextPath}/Projects?contentType=view-projects&action=edit&projectId=<%= project.getProjectId() %>&from=<%= from != null ? from : "" %>&id=<%= id != null ? id : "" %>" class="proj-btn"><i class="fas fa-edit"></i> Edit</a>
                     <form action="${pageContext.request.contextPath}/Projects" method="post" style="display:inline;">
                         <input type="hidden" name="action" value="complete">
                         <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
@@ -97,10 +105,14 @@
             </div>
         <% } else if ("edit".equals(request.getParameter("action"))) { 
             Project project = (Project) request.getAttribute("projectDetails");
+            String from = request.getParameter("from");
+            String id = request.getParameter("id");
         %>
             <div class="proj-edit">
-                <h1><i class="fas fa-edit"></i> Edit <%= project.getProjectName() %></h1>
-                <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/Projects?contentType=view-projects'"><i class="fas fa-arrow-left"></i> Back</button>
+                <div class="proj-header">
+                    <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/Projects?contentType=view-projects&action=view&projectId=<%= project.getProjectId() %>&from=<%= from != null ? from : "" %>&id=<%= id != null ? id : "" %>'"><i class="fas fa-arrow-left"></i> Back</button>
+                    <h1><i class="fas fa-edit"></i> Edit <%= project.getProjectName() %></h1>
+                </div>
                 <form action="${pageContext.request.contextPath}/Projects" method="post">
                     <input type="hidden" name="action" value="updateProject">
                     <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
@@ -112,7 +124,9 @@
                         <label><i class="fas fa-info-circle"></i> Description:</label>
                         <textarea name="description" required><%= project.getDescription() %></textarea>
                     </div>
-                    <button type="submit" class="proj-btn"><i class="fas fa-save"></i> Save Changes</button>
+                    <div class="proj-form-actions">
+                        <button type="submit" class="proj-btn"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
                 </form>
             </div>
         <% } %>
