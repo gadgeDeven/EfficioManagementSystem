@@ -1,171 +1,344 @@
-/* Root Variables for Vibrant Colors */
 :root {
     --primary-color: #7c3aed;
-    --secondary-color: #14b8a6;
+    --secondary-color: #2563eb;
     --accent-color: #f472b6;
-    --background-color: #f1f5f9;
+    --assign-color: #f59e0b;
+    --remove-color: #b91c1c;
+    --background-color: #f9fafb;
+    --text-color: #1f2937;
+    --error-color: #b91c1c;
+    --success-color: #059669;
     --card-bg: #ffffff;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --border-color: #d1d5db;
-    --error-color: #f43f5e;
-    --success-color: #22c55e;
-    --hover-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-    --transition: all 0.2s ease-in-out;
 }
 
-.assign-team-leader-container {
-    max-width: 1280px;
-    margin: 32px auto;
-    padding: 24px;
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    overflow-y: auto;
-    scrollbar-width: none;
-}
 
-.assign-team-leader-container::-webkit-scrollbar {
-    display: none;
-}
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.header h1 {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.back-btn {
-    padding: 8px 16px;
-    background: var(--secondary-color);
-    color: #ffffff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.back-btn:hover {
-    background: #0d9488;
-    box-shadow: var(--hover-shadow);
-}
-
-.table-wrapper {
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-table {
+.project-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
 }
 
-th, td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-size: 0.9375rem;
+.project-table th, .project-table td {
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
 }
 
-th {
+.project-table th {
     background: var(--primary-color);
-    color: #ffffff;
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.8125rem;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
 }
 
-.assigned-list {
-    list-style: none;
-    padding: 0;
-    margin: 16px 0;
+.project-table td {
+    background: var(--card-bg);
+    font-size: 14px;
 }
 
-.assigned-list li {
+.project-table tr:nth-child(even) td {
+    background: #f9fafb;
+}
+
+.project-table i {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+/* Styles for project-team-leaders.jsp */
+.ptl-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.ptl-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.9375rem;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.remove-btn {
-    background: var(--error-color);
-    color: #ffffff;
-    border: none;
-    padding: 6px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: var(--transition);
+.ptl-header h2 {
+    color: var(--primary-color);
+    font-size: 26px;
+    margin: 0;
+    text-align: center;
+    flex-grow: 1;
+    font-weight: 700;
 }
 
-.remove-btn:hover {
-    background: #e11d48;
+.ptl-header h2 i {
+    font-size: 20px;
+    margin-right: 8px;
 }
 
-.team-leader-select {
+.ptl-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ptl-project-details {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(124, 58, 237, 0.1);
+}
+
+.ptl-project-details:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ptl-project-details h3 {
+    color: var(--primary-color);
+    margin: 0 0 15px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.ptl-project-details h3 i {
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+.ptl-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ptl-detail-item {
+    display: flex;
+    flex-direction: column;
     padding: 10px;
-    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 4px;
+    border: 1px solid rgba(124, 58, 237, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.ptl-detail-item:hover {
+    transform: translateY(-2px);
+}
+
+.ptl-detail-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.ptl-detail-label i {
+    font-size: 16px;
+    margin-right: 6px;
+}
+
+.ptl-detail-value {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.ptl-team-leaders {
+    background: var(--card-bg);
+    padding: 20px;
     border-radius: 6px;
-    background: var(--background-color);
-    color: var(--text-primary);
-    width: 100%;
-    font-size: 0.9375rem;
-    transition: var(--transition);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(124, 58, 237, 0.1);
 }
 
-.team-leader-select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 6px rgba(124, 58, 237, 0.2);
+.ptl-team-leaders:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.btn {
-    padding: 10px 20px;
-    background: var(--accent-color);
-    color: #ffffff;
+.ptl-team-leaders h3 {
+    color: var(--primary-color);
+    margin: 0 0 15px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.ptl-team-leaders h3 i {
+    font-size: 18px;
+    margin-right: 6px;
+}
+
+.ptl-team-leaders ul, .ptl-available-list {
+    padding-left: 0;
+    margin: 10px 0;
+    list-style: none;
+}
+
+.ptl-team-leaders li {
+    margin: 8px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    font-weight: 400;
+}
+
+.ptl-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.ptl-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ptl-checkbox-group label {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.ptl-checkbox-group label:hover {
+    color: var(--primary-color);
+}
+
+.ptl-team-leader-checkbox {
+    margin-right: 0;
+}
+
+.ptl-btn, .btn {
+    padding: 8px 14px;
     border: none;
     border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: var(--transition);
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.btn:hover {
-    background: #ec4899;
-    box-shadow: var(--hover-shadow);
+.ptl-btn:hover, .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.error-message {
-    color: var(--error-color);
-    background: #ffe4e6;
+.ptl-btn i, .btn i {
+    font-size: 16px;
+    margin-right: 6px;
+}
+
+.ptl-btn-back {
+    background: var(--secondary-color);
+    color: #fff;
+}
+
+.ptl-btn-assign {
+    background: var(--assign-color);
+    color: #fff;
+}
+
+.ptl-btn-remove {
+    background: var(--remove-color);
+    color: #fff;
+    padding: 6px 10px;
+}
+
+.ptl-btn-profile {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 6px 10px;
+}
+
+.ptl-btn-profile:hover {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+}
+
+.btn-view {
+    background: var(--secondary-color);
+    color: #fff;
+    padding: 8px 14px;
+}
+
+.ptl-message-box {
     padding: 12px;
+    margin-bottom: 15px;
     border-radius: 6px;
-    margin: 16px 0;
-    text-align: center;
-    font-size: 0.875rem;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.success-message {
-    color: var(--success-color);
-    background: #dcfce7;
-    padding: 12px;
-    border-radius: 6px;
-    margin: 16px 0;
-    text-align: center;
-    font-size: 0.875rem;
+.ptl-message-box.ptl-success {
+    background: var(--success-color);
+    color: #fff;
+}
+
+.ptl-message-box.ptl-error {
+    background: var(--error-color);
+    color: #fff;
+}
+
+.ptl-message-box i {
+    font-size: 16px;
+    margin-right: 8px;
+}
+
+.ptl-mt-2 {
+    margin-top: 10px;
+}
+
+
+
+@media (max-width: 768px) {
+    .container, .ptl-container {
+        padding: 10px;
+    }
+    .project-table th, .project-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+    .ptl-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .ptl-header .ptl-btn-back {
+        align-self: flex-start;
+    }
+    .ptl-project-details, .ptl-team-leaders {
+        padding: 15px;
+    }
+    .ptl-details-grid {
+        grid-template-columns: 1fr;
+    }
+    .ptl-team-leaders li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .ptl-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
 }

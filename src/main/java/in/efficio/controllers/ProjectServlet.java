@@ -118,15 +118,18 @@ public class ProjectServlet extends HttpServlet {
         } else if ("create-projects".equals(contentType)) {
             // No changes
         } else if ("assign-team-leaders".equals(contentType)) {
-            List<TeamLeader> teamLeaders = teamLeaderDAO.getAllTeamLeaders();
             List<Project> projects = projectDAO.getAllProjects();
-            Map<Integer, List<TeamLeader>> assignedTeamLeadersMap = new HashMap<>();
-            for (Project p : projects) {
-                assignedTeamLeadersMap.put(p.getProjectId(), projectDAO.getAssignedTeamLeaders(p.getProjectId()));
-            }
-            request.setAttribute("teamLeaders", teamLeaders);
             request.setAttribute("projects", projects);
-            request.setAttribute("assignedTeamLeadersMap", assignedTeamLeadersMap);
+        } else if ("project-team-leaders".equals(contentType)) {
+            int projectId = Integer.parseInt(request.getParameter("projectId"));
+            Project project = projectDAO.getProjectById(projectId);
+            List<TeamLeader> assignedTeamLeaders = projectDAO.getAssignedTeamLeaders(projectId);
+            List<TeamLeader> availableTeamLeaders = teamLeaderDAO.getAllTeamLeaders();
+            // Remove assigned team leaders from available list
+            availableTeamLeaders.removeIf(tl -> assignedTeamLeaders.stream().anyMatch(a -> a.getTeamleader_id() == tl.getTeamleader_id()));
+            request.setAttribute("project", project);
+            request.setAttribute("assignedTeamLeaders", assignedTeamLeaders);
+            request.setAttribute("availableTeamLeaders", availableTeamLeaders);
         }
         request.getRequestDispatcher("views/dashboards/admin/admin-dashboard.jsp").forward(request, response);
     }
@@ -141,7 +144,8 @@ public class ProjectServlet extends HttpServlet {
         }
 
         String action = request.getParameter("action");
-        String redirectUrl = request.getContextPath() + "/Projects?contentType=assign-team-leaders";
+        String contentType = request.getParameter("contentType");
+        String redirectUrl = request.getContextPath() + "/Projects?contentType=" + contentType + "&projectId=" + request.getParameter("projectId");
         DashboardStats stats = (DashboardStats) session.getAttribute("stats");
         if (stats == null) {
             stats = new DashboardStats();
@@ -150,50 +154,49 @@ public class ProjectServlet extends HttpServlet {
         }
 
         try {
-        	if ("createProject".equals(action)) {
-        	    Project project = new Project();
-        	    project.setProjectName(request.getParameter("projectName"));
-        	    project.setDescription(request.getParameter("description"));
-        	    project.setStartDate(Date.valueOf(request.getParameter("startDate")));
-        	    project.setEndDate(Date.valueOf(request.getParameter("endDate")));
-        	    project.setStatus("Ongoing");
-        	    project.setPriority(request.getParameter("priority"));
-        	    project.setAdminId(1);
+            if ("createProject".equals(action)) {
+                Project project = new Project();
+                project.setProjectName(request.getParameter("projectName"));
+                project.setDescription(request.getParameter("description"));
+                project.setStartDate(Date.valueOf(request.getParameter("startDate")));
+                project.setEndDate(Date.valueOf(request.getParameter("endDate")));
+                project.setStatus("Ongoing");
+                project.setPriority(request.getParameter("priority"));
+                project.setAdminId(1);
 
-        	    int projectId = projectDAO.createProject(project);
-        	    if (projectId == -1) {
-        	        session.setAttribute("error", "Failed to create project.");
-        	        response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
-        	        return;
-        	    }
+                int projectId = projectDAO.createProject(project);
+                if (projectId == -1) {
+                    session.setAttribute("error", "Failed to create project.");
+                    response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
+                    return;
+                }
 
-        	    String[] teamLeaderIds = request.getParameterValues("teamLeaderIds");
-        	    if (teamLeaderIds != null) {
-        	        for (String tlId : teamLeaderIds) {
-        	            int teamLeaderId = Integer.parseInt(tlId);
-        	            projectDAO.assignTeamLeader(projectId, teamLeaderId);
-        	        }
-        	    }
+                String[] teamLeaderIds = request.getParameterValues("teamLeaderIds");
+                if (teamLeaderIds != null) {
+                    for (String tlId : teamLeaderIds) {
+                        int teamLeaderId = Integer.parseInt(tlId);
+                        projectDAO.assignTeamLeader(projectId, teamLeaderId);
+                    }
+                }
 
-        	    updateStats(stats);
-        	    session.setAttribute("stats", stats);
-        	    session.setAttribute("message", "Project created successfully with ID: " + projectId);
-        	    response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
-        	}else if ("complete".equals(action)) {
+                updateStats(stats);
+                session.setAttribute("stats", stats);
+                session.setAttribute("message", "Project created successfully with ID: " + projectId);
+                response.sendRedirect(request.getContextPath() + "/DashboardServlet?contentType=welcome");
+            } else if ("complete".equals(action)) {
                 int projectId = Integer.parseInt(request.getParameter("projectId"));
                 Project project = projectDAO.getProjectById(projectId);
                 if ("Ongoing".equals(project.getStatus())) {
                     projectDAO.updateProjectStatus(projectId, "Completed");
-                    projectDAO.updateProjectProgress(projectId, 100); // Set progress to 100%
+                    projectDAO.updateProjectProgress(projectId, 100);
                     updateStats(stats);
                     session.setAttribute("stats", stats);
                     session.setAttribute("message", "Project marked as completed!");
                 } else {
                     session.setAttribute("error", "Project is already completed.");
                 }
-                // Redirect to project details page
                 response.sendRedirect(request.getContextPath() + "/Projects?contentType=view-projects&action=view&projectId=" + projectId);
-            }else if ("updateProject".equals(action)) {
+            } else if ("updateProject".equals(action)) {
                 int projectId = Integer.parseInt(request.getParameter("projectId"));
                 Project project = projectDAO.getProjectById(projectId);
                 project.setProjectName(request.getParameter("projectName"));
@@ -221,7 +224,26 @@ public class ProjectServlet extends HttpServlet {
                 } else {
                     session.setAttribute("error", "Failed to remove team leader.");
                 }
-                response.sendRedirect(redirectUrl);
+                response.sendRedirect(request.getContextPath() + "/Projects?contentType=project-team-leaders&projectId=" + projectId);
+            } else if ("bulkAssignTeamLeaders".equals(action)) {
+                int projectId = Integer.parseInt(request.getParameter("projectId"));
+                String[] teamLeaderIds = request.getParameterValues("teamLeaderIds");
+                boolean success = true;
+                if (teamLeaderIds != null && teamLeaderIds.length > 0) {
+                    for (String tlId : teamLeaderIds) {
+                        if (!projectDAO.assignTeamLeader(projectId, Integer.parseInt(tlId))) {
+                            success = false;
+                        }
+                    }
+                    if (success) {
+                        session.setAttribute("message", "Team leaders assigned successfully!");
+                    } else {
+                        session.setAttribute("error", "Failed to assign some team leaders.");
+                    }
+                } else {
+                    session.setAttribute("error", "No team leaders selected.");
+                }
+                response.sendRedirect(request.getContextPath() + "/Projects?contentType=project-team-leaders&projectId=" + projectId);
             }
         } catch (Exception e) {
             session.setAttribute("error", "An error occurred: " + e.getMessage());

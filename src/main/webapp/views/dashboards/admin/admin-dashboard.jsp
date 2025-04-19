@@ -43,7 +43,7 @@
                     <li><a href="${pageContext.request.contextPath}/TeamLeaders?contentType=view-teamleaders" <%= "view-teamleaders".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-tie"></i> <span>View Team Leaders</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/Projects?contentType=create-projects" <%= "create-projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-folder-plus"></i> <span>Create Projects</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/Projects?contentType=view-projects" <%= "view-projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-eye"></i> <span>View Projects</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/Projects?contentType=assign-team-leaders" <%= "assign-team-leaders".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-tie"></i> <span>Assign Team Leaders</span></a></li>
+                    <li><a href="${pageContext.request.contextPath}/Projects?contentType=assign-team-leaders" <%= "assign-team-leaders".equals(contentType) || "project-team-leaders".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-tie"></i> <span>Assign Team Leaders</span></a></li>
                     <li class="logout"><a href="${pageContext.request.contextPath}/LogoutServlet"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                 </ul>
             </nav>
@@ -60,6 +60,7 @@
                         : "create-projects".equals(contentType) ? "fas fa-folder-plus" 
                         : "view-projects".equals(contentType) ? "fas fa-eye" 
                         : "assign-team-leaders".equals(contentType) ? "fas fa-user-tie" 
+                        : "project-team-leaders".equals(contentType) ? "fas fa-project-diagram" 
                         : "adminsList".equals(contentType) ? "fas fa-user-shield" 
                         : "projectsList".equals(contentType) ? "fas fa-project-diagram" 
                         : "pendingList".equals(contentType) ? "fas fa-tasks" 
@@ -75,6 +76,7 @@
                         : "create-projects".equals(contentType) ? "Create Projects" 
                         : "view-projects".equals(contentType) ? "View Projects" 
                         : "assign-team-leaders".equals(contentType) ? "Assign Team Leaders" 
+                        : "project-team-leaders".equals(contentType) ? "Project Team Leaders" 
                         : "adminsList".equals(contentType) ? "Admins List" 
                         : "projectsList".equals(contentType) ? "All Projects" 
                         : "pendingList".equals(contentType) ? "Pending Projects" 
@@ -201,7 +203,7 @@
                             <jsp:include page="teamleader_list.jsp" />
                         </div>
                     <% } else if ("teamleader-profile".equals(contentType)) { %>
-                        <button class="back-btn" onclick="window.location.href='<%="project-view".equals(from) ? request.getContextPath() + "/Projects?contentType=view-projects&action=view&projectId=" + request.getParameter("projectId") : request.getContextPath() + "/TeamLeaders?contentType=view-teamleaders"%>'"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="back-btn" onclick="window.location.href='<%="project-team-leaders".equals(from) ? request.getContextPath() + "/Projects?contentType=project-team-leaders&projectId=" + request.getParameter("projectId") : "project-view".equals(from) ? request.getContextPath() + "/Projects?contentType=view-projects&action=view&projectId=" + request.getParameter("projectId") : request.getContextPath() + "/TeamLeaders?contentType=view-teamleaders"%>'"><i class="fas fa-arrow-left"></i> Back</button>
                         <div class="teamleader-profile">
                             <jsp:include page="teamleader_profile.jsp" />
                         </div>
@@ -216,6 +218,10 @@
                     <% } else if ("assign-team-leaders".equals(contentType)) { %>
                         <div class="assign-team-leaders">
                             <jsp:include page="assign-team-leaders.jsp" />
+                        </div>
+                    <% } else if ("project-team-leaders".equals(contentType)) { %>
+                        <div class="project-team-leaders">
+                            <jsp:include page="project-team-leaders.jsp" />
                         </div>
                     <% } else if (!"notifications".equals(contentType)) { %>
                         <p>Coming soon! This feature will be implemented later.</p>
