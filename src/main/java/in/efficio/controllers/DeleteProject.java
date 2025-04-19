@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebServlet("/DeleteProject")
@@ -20,8 +21,20 @@ public class DeleteProject extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int projectId = Integer.parseInt(request.getParameter("projectId"));
-        projectDAO.deleteProject(projectId);
-        response.sendRedirect(request.getContextPath() + "/Projects?contentType=view-projects");
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("userName") == null) {
+            response.sendRedirect(request.getContextPath() + "/LogoutServlet?message=Session Expired! Please login again.");
+            return;
+        }
+
+        try {
+            int projectId = Integer.parseInt(request.getParameter("projectId"));
+            projectDAO.deleteProject(projectId);
+            session.setAttribute("message", "Project deleted successfully!");
+            response.sendRedirect(request.getContextPath() + "/Projects?contentType=view-projects");
+        } catch (Exception e) {
+            session.setAttribute("error", "Failed to delete project: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/Projects?contentType=view-projects");
+        }
     }
 }

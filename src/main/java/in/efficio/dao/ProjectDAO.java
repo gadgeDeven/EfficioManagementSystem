@@ -84,13 +84,59 @@ public class ProjectDAO {
     }
 
     public void deleteProject(int projectId) {
-        String query = "DELETE FROM project WHERE project_id = ?";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, projectId);
-            ps.executeUpdate();
+        Connection con = null;
+        try {
+            con = DbConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
+
+            // 1. Remove project references from team_leader (set assign_project_id to NULL)
+            String updateTeamLeaderQuery = "UPDATE team_leader SET assign_project_id = NULL WHERE assign_project_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(updateTeamLeaderQuery)) {
+                ps.setInt(1, projectId);
+                ps.executeUpdate();
+            }
+
+            // 2. Remove project references from employee (set assign_project_id to NULL)
+            String updateEmployeeQuery = "UPDATE employee SET assign_project_id = NULL WHERE assign_project_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(updateEmployeeQuery)) {
+                ps.setInt(1, projectId);
+                ps.executeUpdate();
+            }
+
+            // 3. Delete related records from works_on
+            String deleteWorksOnQuery = "DELETE FROM works_on WHERE project_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(deleteWorksOnQuery)) {
+                ps.setInt(1, projectId);
+                ps.executeUpdate();
+            }
+
+            // 4. Delete the project from project table
+            String deleteProjectQuery = "DELETE FROM project WHERE project_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(deleteProjectQuery)) {
+                ps.setInt(1, projectId);
+                ps.executeUpdate();
+            }
+
+            con.commit(); // Commit transaction
         } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback on error
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             e.printStackTrace();
+            throw new RuntimeException("Failed to delete project: " + e.getMessage());
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 

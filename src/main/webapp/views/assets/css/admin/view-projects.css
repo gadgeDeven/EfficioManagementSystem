@@ -41,7 +41,21 @@ body {
 .proj-list-container {
     width: 100%;
     margin: 0;
-    padding: 0 ;
+    padding: 0;
+}
+
+/* Success Message */
+p.proj-success-msg {
+    font-size: 0.95rem;
+    color: var(--list-success-color);
+    text-align: center;
+    padding: 20px;
+    background: var(--list-card-bg);
+    border: 1px solid var(--list-success-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: 500px;
+    margin: 24px auto;
 }
 
 /* Table Styling (Project List) */

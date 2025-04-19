@@ -11,6 +11,17 @@
 <body>
     <div class="proj-list-container">
         <% if (!"view".equals(request.getParameter("action")) && !"edit".equals(request.getParameter("action"))) { %>
+            <%-- Display success or error message --%>
+            <% String message = (String) session.getAttribute("message"); %>
+            <% String error = (String) session.getAttribute("error"); %>
+            <% if (message != null) { %>
+                <p class="proj-success-msg"><i class="fas fa-check-circle"></i> <%= message %></p>
+                <% session.removeAttribute("message"); %>
+            <% } %>
+            <% if (error != null) { %>
+                <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> <%= error %></p>
+                <% session.removeAttribute("error"); %>
+            <% } %>
             <% List<Project> projects = (List<Project>) request.getAttribute("projects"); %>
             <% if (projects != null && !projects.isEmpty()) { %>
                 <table>
@@ -72,12 +83,12 @@
                         <p><strong><i class="fas fa-exclamation-triangle"></i> Priority:</strong> <%= project.getPriority() %></p>
                     </div>
                     <div class="proj-progress-bar">
-    <label><i class="fas fa-chart-line"></i> Progress:</label>
-    <div class="progress-container">
-        <div class="progress" style="width: <%= progress != null ? progress : 0 %>%;"></div>
-    </div>
-    <span><%= progress != null ? progress : 0 %>%</span>
-</div>
+                        <label><i class="fas fa-chart-line"></i> Progress:</label>
+                        <div class="progress-container">
+                            <div class="progress" style="width: <%= progress != null ? progress : 0 %>%;"></div>
+                        </div>
+                        <span><%= progress != null ? progress : 0 %>%</span>
+                    </div>
                 </div>
                 <h3><i class="fas fa-user-tie"></i> Team Leaders</h3>
                 <div class="proj-team-list">
