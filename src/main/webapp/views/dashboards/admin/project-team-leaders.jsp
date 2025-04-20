@@ -32,7 +32,7 @@
                 <input type="hidden" name="contentType" value="assign-team-leaders">
                 <button type="submit" class="ptl-btn ptl-btn-back"><i class="fas fa-arrow-left"></i> Back to Projects</button>
             </form>
-            <h2><i class="fas fa-project-diagram"></i> Project Team Leaders</h2>
+ 
         </div>
         <% 
             Project project = (Project) request.getAttribute("project");
@@ -46,27 +46,27 @@
                     <div class="ptl-details-grid">
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-project-diagram"></i> Name</span>
-                            <span class="ptl-detail-value"><%= project.getProjectName() != null ? project.getProjectName() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getProjectName() %></span>
                         </div>
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-align-left"></i> Description</span>
-                            <span class="ptl-detail-value"><%= project.getDescription() != null ? project.getDescription() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getDescription() %></span>
                         </div>
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-calendar-alt"></i> Start Date</span>
-                            <span class="ptl-detail-value"><%= project.getStartDate() != null ? project.getStartDate() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getStartDate() %></span>
                         </div>
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-calendar-check"></i> End Date</span>
-                            <span class="ptl-detail-value"><%= project.getEndDate() != null ? project.getEndDate() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getEndDate() %></span>
                         </div>
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-flag"></i> Status</span>
-                            <span class="ptl-detail-value"><%= project.getStatus() != null ? project.getStatus() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getStatus() %></span>
                         </div>
                         <div class="ptl-detail-item">
                             <span class="ptl-detail-label"><i class="fas fa-exclamation-circle"></i> Priority</span>
-                            <span class="ptl-detail-value"><%= project.getPriority() != null ? project.getPriority() : "N/A" %></span>
+                            <span class="ptl-detail-value"><%= project.getPriority() %></span>
                         </div>
                     </div>
                 </div>
@@ -76,14 +76,21 @@
                         <% if (assignedTeamLeaders != null && !assignedTeamLeaders.isEmpty()) { %>
                             <% for (TeamLeader tl : assignedTeamLeaders) { %>
                                 <li>
-                                    <span><%= tl.getName() != null ? tl.getName() : "Unknown" %></span>
+                                    <span><%= tl.getName() %></span>
                                     <div class="ptl-actions">
+                                        <form action="${pageContext.request.contextPath}/TeamLeaders" method="get" style="display:inline;">
+                                            <input type="hidden" name="contentType" value="teamleader-profile">
+                                            <input type="hidden" name="id" value="<%= tl.getTeamleader_id() %>">
+                                            <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
+                                            <input type="hidden" name="from" value="project-team-leaders">
+                                            <button type="submit" class="ptl-btn ptl-btn-profile"><i class="fas fa-user"></i> View Profile</button>
+                                        </form>
                                         <form action="${pageContext.request.contextPath}/Projects" method="post" style="display:inline;">
                                             <input type="hidden" name="action" value="removeTeamLeader">
                                             <input type="hidden" name="contentType" value="project-team-leaders">
                                             <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
                                             <input type="hidden" name="teamLeaderId" value="<%= tl.getTeamleader_id() %>">
-                                            <button type="submit" class="ptl-btn ptl-btn-remove" onclick="return confirm('Are you sure you want to remove this team leader?')"><i class="fas fa-times"></i> Remove</button>
+                                            <button type="submit" class="ptl-btn ptl-btn-remove"><i class="fas fa-times"></i> Remove</button>
                                         </form>
                                     </div>
                                 </li>
@@ -103,12 +110,20 @@
                                     <li>
                                         <div class="ptl-checkbox-group">
                                             <input type="checkbox" class="ptl-team-leader-checkbox" id="tl-<%= tl.getTeamleader_id() %>" name="teamLeaderIds" value="<%= tl.getTeamleader_id() %>">
-                                            <label for="tl-<%= tl.getTeamleader_id() %>" onclick="toggleCheckbox('tl-<%= tl.getTeamleader_id() %>')"><%= tl.getName() != null ? tl.getName() : "Unknown" %></label>
+                                            <label onclick="toggleCheckbox('tl-<%= tl.getTeamleader_id() %>')"><%= tl.getName() %></label>
+                                        </div>
+                                        <div class="ptl-actions">
+                                            <a href="${pageContext.request.contextPath}/TeamLeaders?contentType=teamleader-profile&id=<%= tl.getTeamleader_id() %>&projectId=<%= project.getProjectId() %>&from=project-team-leaders"
+                                               class="ptl-btn ptl-btn-profile">
+                                                <i class="fas fa-user"></i> View Profile
+                                            </a>
                                         </div>
                                     </li>
                                 <% } %>
                             </ul>
-                            <button type="submit" class="ptl-btn ptl-btn-assign ptl-mt-2" id="assignButton" disabled><i class="fas fa-plus"></i> Assign Selected</button>
+                            <button type="submit" class="ptl-btn ptl-btn-assign ptl-mt-2">
+                                <i class="fas fa-plus"></i> Assign Selected
+                            </button>
                         <% } else { %>
                             <p>No team leaders available.</p>
                         <% } %>
@@ -123,7 +138,6 @@
         function toggleCheckbox(id) {
             const checkbox = document.getElementById(id);
             checkbox.checked = !checkbox.checked;
-            updateAssignButton();
         }
 
         function validateForm() {
@@ -132,24 +146,8 @@
                 alert('Please select at least one team leader to assign.');
                 return false;
             }
-            return confirm('Are you sure you want to assign the selected team leaders?');
+            return true;
         }
-
-        function updateAssignButton() {
-            const checkboxes = document.querySelectorAll('.ptl-team-leader-checkbox:checked');
-            const assignButton = document.getElementById('assignButton');
-            if (assignButton) {
-                assignButton.disabled = checkboxes.length === 0;
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const checkboxes = document.querySelectorAll('.ptl-team-leader-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateAssignButton);
-            });
-            updateAssignButton();
-        });
     </script>
 </body>
 </html>

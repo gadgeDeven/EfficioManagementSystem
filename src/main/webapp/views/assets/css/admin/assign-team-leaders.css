@@ -265,6 +265,7 @@
     background: var(--primary-color);
     color: #fff;
     padding: 6px 10px;
+        text-decoration: none;
 }
 
 .ptl-btn-profile:hover {
