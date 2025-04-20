@@ -31,8 +31,10 @@ public class TeamLeaderServlet extends HttpServlet {
         }
 
         String idParam = request.getParameter("id");
-        String from = request.getParameter("from"); // Track origin
-        request.setAttribute("contentType", "view-teamleaders");
+        String from = request.getParameter("from");
+        String contentType = request.getParameter("contentType");
+        request.setAttribute("contentType", contentType != null ? contentType : "view-teamleaders");
+        request.setAttribute("from", from);
 
         if (idParam != null) {
             try {
@@ -40,15 +42,15 @@ public class TeamLeaderServlet extends HttpServlet {
                 Optional<TeamLeader> tlOptional = teamLeaderDAO.getTeamLeaderById(id);
                 if (tlOptional.isPresent()) {
                     request.setAttribute("teamLeader", tlOptional.get());
-                    request.setAttribute("from", from); // Pass origin to JSP
+                    request.setAttribute("projectId", request.getParameter("projectId"));
                     request.getRequestDispatcher("views/dashboards/admin/admin-dashboard.jsp").forward(request, response);
                 } else {
-                    request.setAttribute("error", "Team Leader not found.");
-                    request.getRequestDispatcher("error.jsp").forward(request, response);
+                    session.setAttribute("error", "Team Leader not found.");
+                    response.sendRedirect(request.getContextPath() + "/Projects?contentType=project-team-leaders&projectId=" + request.getParameter("projectId"));
                 }
             } catch (NumberFormatException e) {
-                request.setAttribute("error", "Invalid Team Leader ID.");
-                request.getRequestDispatcher("error.jsp").forward(request, response);
+                session.setAttribute("error", "Invalid Team Leader ID.");
+                response.sendRedirect(request.getContextPath() + "/Projects?contentType=project-team-leaders&projectId=" + request.getParameter("projectId"));
             }
         } else {
             List<TeamLeader> teamLeaders = teamLeaderDAO.getAllTeamLeaders();

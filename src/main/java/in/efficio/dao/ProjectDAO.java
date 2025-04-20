@@ -216,32 +216,97 @@ public class ProjectDAO {
     }
 
     public boolean assignTeamLeader(int projectId, int teamLeaderId) {
-        String query = "INSERT INTO works_on (project_id, teamleader_id, employee_id, task_id) " +
-                      "VALUES (?, ?, NULL, NULL) " +
-                      "ON DUPLICATE KEY UPDATE project_id = project_id";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, projectId);
-            ps.setInt(2, teamLeaderId);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0 || isTeamLeaderAssigned(projectId, teamLeaderId);
+        Connection con = null;
+        try {
+            con = DbConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
+
+            // Update team_leader.assign_project_id
+            String updateTeamLeaderQuery = "UPDATE team_leader SET assign_project_id = ? WHERE teamleader_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(updateTeamLeaderQuery)) {
+                ps.setInt(1, projectId);
+                ps.setInt(2, teamLeaderId);
+                ps.executeUpdate();
+            }
+
+            // Insert into works_on
+            String insertWorksOnQuery = "INSERT INTO works_on (project_id, teamleader_id, employee_id, task_id) " +
+                                       "VALUES (?, ?, NULL, NULL) " +
+                                       "ON DUPLICATE KEY UPDATE project_id = project_id";
+            try (PreparedStatement ps = con.prepareStatement(insertWorksOnQuery)) {
+                ps.setInt(1, projectId);
+                ps.setInt(2, teamLeaderId);
+                ps.executeUpdate();
+            }
+
+            con.commit(); // Commit transaction
+            return true;
         } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback on error
+                    con.setAutoCommit(true);
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public boolean removeTeamLeader(int projectId, int teamLeaderId) {
-        String query = "DELETE FROM works_on WHERE project_id = ? AND teamleader_id = ? AND employee_id IS NULL AND task_id IS NULL";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, projectId);
-            ps.setInt(2, teamLeaderId);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+        Connection con = null;
+        try {
+            con = DbConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
+
+            // Clear team_leader.assign_project_id
+            String updateTeamLeaderQuery = "UPDATE team_leader SET assign_project_id = NULL WHERE teamleader_id = ? AND assign_project_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(updateTeamLeaderQuery)) {
+                ps.setInt(1, teamLeaderId);
+                ps.setInt(2, projectId);
+                ps.executeUpdate();
+            }
+
+            // Delete from works_on
+            String deleteWorksOnQuery = "DELETE FROM works_on WHERE project_id = ? AND teamleader_id = ? AND employee_id IS NULL AND task_id IS NULL";
+            try (PreparedStatement ps = con.prepareStatement(deleteWorksOnQuery)) {
+                ps.setInt(1, projectId);
+                ps.setInt(2, teamLeaderId);
+                int rowsAffected = ps.executeUpdate();
+                con.commit();
+                return rowsAffected > 0;
+            }
         } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback();
+                    con.setAutoCommit(true);
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             e.printStackTrace();
             return false;
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
