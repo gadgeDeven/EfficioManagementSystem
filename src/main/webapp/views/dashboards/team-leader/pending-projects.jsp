@@ -1,7 +1,9 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, in.efficio.model.Project"%>
 <h1>Pending Projects</h1>
 <div class="project-list-container">
+    <button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
     <table class="table-modern">
         <thead>
             <tr>
@@ -24,7 +26,7 @@
                     <td><%=project.getStatus()%></td>
                     <td><%=project.getPriority() != null ? project.getPriority() : "N/A"%></td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=project-details&projectId=<%=project.getProjectId()%>" class="view-btn">View</a>
+                        <a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=pending-projects&projectId=<%=project.getProjectId()%>" class="view-btn">View</a>
                     </td>
                 </tr>
             <% 

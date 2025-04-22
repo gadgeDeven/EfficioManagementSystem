@@ -1,7 +1,8 @@
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, in.efficio.model.Task, in.efficio.model.Project, in.efficio.model.Employee"%>
 <h1>Tasks for Project</h1>
-<button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=assign-projects'"><i class="fas fa-arrow-left"></i> Back</button>
+<button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
 <div class="tasks-by-project-container">
     <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
     <% Project selectedProject = (Project) request.getAttribute("selectedProject"); %>

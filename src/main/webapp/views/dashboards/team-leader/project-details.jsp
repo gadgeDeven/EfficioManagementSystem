@@ -1,7 +1,8 @@
+```jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, in.efficio.model.Project, in.efficio.model.Employee"%>
 <h1>Project Details</h1>
-<button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=assign-projects'"><i class="fas fa-arrow-left"></i> Back</button>
+<button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
 <div class="project-details-container">
     <% Project project = (Project) request.getAttribute("selectedProject"); %>
     <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
@@ -15,6 +16,10 @@
     <% if (project != null) { %>
         <h2><%= project.getProjectName() %></h2>
         <table class="table-modern project-info">
+            <tr>
+                <th>ID</th>
+                <td><%= project.getProjectId() %></td>
+            </tr>
             <tr>
                 <th>Description</th>
                 <td><%= project.getDescription() != null ? project.getDescription() : "N/A" %></td>
@@ -38,7 +43,7 @@
         </table>
 
         <h3>Manage Employees</h3>
-        <form action="${pageContext.request.contextPath}/TeamLeaderDashboard" method="post">
+        <form action="${pageContext.request.contextPath}/TeamLeaderAssignmentServlet" method="post">
             <input type="hidden" name="action" value="manageEmployees">
             <input type="hidden" name="projectId" value="<%= project.getProjectId() %>">
             <table class="table-modern">
@@ -62,7 +67,7 @@
                                         <%= assignedEmployees != null && assignedEmployees.stream().anyMatch(e -> e.getEmployee_id() == emp.getEmployee_id()) ? "checked" : "" %>>
                                 </td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=employee-details&employeeId=<%= emp.getEmployee_id() %>&projectId=<%= project.getProjectId() %>">
+                                    <a href="${pageContext.request.contextPath}/TeamLeaderTeamServlet?contentType=employee-details&employeeId=<%= emp.getEmployee_id() %>&projectId=<%= project.getProjectId() %>">
                                         <%= emp.getName() != null ? emp.getName() : "N/A" %>
                                     </a>
                                 </td>
@@ -84,3 +89,4 @@
         <p>No project selected.</p>
     <% } %>
 </div>
+```
