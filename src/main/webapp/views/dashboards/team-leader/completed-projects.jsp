@@ -1,10 +1,19 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List, in.efficio.model.Project"%>
-<h1>Completed Projects</h1>
-<div class="project-list-container">
-    <button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
-    <table class="table-modern">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Completed Projects</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/lists.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/view-projects.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+<div class="proj-list-container">
+    <h1>Completed Projects</h1>
+    <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
+    <table>
         <thead>
             <tr>
                 <th>Project Name</th>
@@ -21,20 +30,22 @@
                     for (Project project : completedProjects) {
             %>
                 <tr>
-                    <td><%=project.getProjectName()%></td>
-                    <td><%=project.getDescription() != null ? project.getDescription() : "N/A"%></td>
-                    <td><%=project.getStatus()%></td>
-                    <td><%=project.getPriority() != null ? project.getPriority() : "N/A"%></td>
+                    <td><%= project.getProjectName() %></td>
+                    <td><%= project.getDescription() != null ? project.getDescription() : "N/A" %></td>
+                    <td><%= project.getStatus() %></td>
+                    <td><%= project.getPriority() != null ? project.getPriority() : "N/A" %></td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=completed-projects&projectId=<%=project.getProjectId()%>" class="view-btn">View</a>
+                        <a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=completed-projects&projectId=<%= project.getProjectId() %>" class="proj-btn">View</a>
                     </td>
                 </tr>
             <% 
                     }
                 } else {
             %>
-                <tr><td colspan="5">No completed projects found.</td></tr>
+                <tr><td colspan="5"><p class="no-data">No completed projects found.</p></td></tr>
             <% } %>
         </tbody>
     </table>
 </div>
+</body>
+</html>
