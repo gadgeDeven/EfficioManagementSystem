@@ -384,4 +384,21 @@ public class EmployeeDAO {
             throw new RuntimeException("Failed to remove employee from project: " + e.getMessage(), e);
         }
     }
+    
+    public String getTeamLeaderNameById(int teamLeaderId) {
+        String query = "SELECT name FROM team_leader WHERE teamleader_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, teamLeaderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "N/A";
+    }
+
+    
 }
