@@ -10,21 +10,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <%
-        TeamLeader tl = (TeamLeader) request.getAttribute("teamLeader");
-        String projectId = (String) request.getAttribute("projectId");
-        String from = (String) request.getAttribute("from");
-        String backUrl;
-        if ("project-team-leaders".equals(from) && projectId != null) {
-            backUrl = "${pageContext.request.contextPath}/Projects?contentType=project-team-leaders&projectId=" + projectId;
-        } else if ("project-view".equals(from) && projectId != null) {
-            backUrl = "${pageContext.request.contextPath}/Projects?contentType=view-projects&action=view&projectId=" + projectId;
-        } else {
-            backUrl = "${pageContext.request.contextPath}/TeamLeaders?contentType=view-teamleaders";
-        }
-    %>
     <div class="profile-content">
-        
+        <%
+            TeamLeader tl = (TeamLeader) request.getAttribute("teamLeader");
+            String projectId = (String) request.getAttribute("projectId");
+            String from = (String) request.getAttribute("from");
+            String backUrl;
+            if ("project-team-leaders".equals(from) && projectId != null) {
+                backUrl = "${pageContext.request.contextPath}/Projects?contentType=project-team-leaders&projectId=" + projectId;
+            } else if ("project-view".equals(from) && projectId != null) {
+                backUrl = "${pageContext.request.contextPath}/Projects?contentType=view-projects&action=view&projectId=" + projectId;
+            } else {
+                backUrl = "${pageContext.request.contextPath}/TeamLeaders?contentType=view-teamleaders";
+            }
+        %>
         <% if (tl != null) { %>
             <div class="profile-details">
                 <div class="profile-details-content">
@@ -76,6 +75,7 @@
         <% } else { %>
             <p class="no-data"><i class="fas fa-exclamation-circle"></i> Team Leader data not found.</p>
         <% } %>
+       
     </div>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/employee_list.js"></script>
 </body>
