@@ -1,6 +1,7 @@
 package in.efficio.dao;
 
 import in.efficio.dbconnection.DbConnection;
+import in.efficio.model.Employee;
 import in.efficio.model.Project;
 import in.efficio.model.TeamLeader;
 import java.sql.*;
@@ -474,5 +475,28 @@ public class ProjectDAO {
         	e.printStackTrace();
         }
         return "Unknown Project";
+    }
+    
+    public List<Employee> getEmployeesByProjectId(int projectId) {
+        List<Employee> employees = new ArrayList<>();
+        String query = "SELECT employee_id, name, email " +
+                      "FROM employee " +
+                      "WHERE assign_project_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, projectId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Employee emp = new Employee();
+                emp.setEmployee_id(rs.getInt("employee_id"));
+                emp.setName(rs.getString("name"));
+                emp.setEmail(rs.getString("email"));
+                employees.add(emp);
+            }
+            System.out.println("Fetched " + employees.size() + " employees for projectId: " + projectId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return employees;
     }
 }
