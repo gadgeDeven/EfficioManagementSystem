@@ -17,13 +17,14 @@
 
 .create-project-container {
     max-width: 800px;
-    margin: 48px auto;
+    margin: 24px auto; /* Reduced from 48px to move container upward */
     padding: 32px;
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: var(--shadow-lg);
     position: relative;
     z-index: 0;
+    overflow: hidden; /* Prevent scrollbars */
 }
 
 .create-project-container::before {
@@ -36,6 +37,10 @@
     background: var(--card-bg);
     z-index: -1;
     border-radius: 12px;
+}
+
+.create-project-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for WebKit browsers */
 }
 
 .form-group {
@@ -97,6 +102,9 @@
     box-shadow: var(--shadow-sm);
     position: relative;
     z-index: 1;
+    /* Ensure clicking anywhere opens the date picker */
+    -webkit-appearance: none; /* Remove default styling for WebKit */
+    appearance: none;
 }
 
 .form-group input[type="date"].date-input:hover {
@@ -112,7 +120,13 @@
 .form-group input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
     padding: 6px;
-    filter: invert(30%) sepia(80%) saturate(1500%) hue-rotate(160deg) brightness(90%) contrast(95%);
+    width: 100%; /* Make the indicator cover the entire input */
+    height: 100%;
+    opacity: 0; /* Hide default icon but keep clickable */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
 }
 
 .teamleader-container {
@@ -150,7 +164,7 @@
     font-weight: 500;
     box-shadow: var(--shadow-md);
     gap: 8px;
-    min-width: 100px; /* Ensure enough space for name */
+    min-width: 100px;
 }
 
 .teamleader-tag .teamleader-name {
