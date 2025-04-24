@@ -1,4 +1,3 @@
-
 package in.efficio.controllers;
 
 import in.efficio.dao.EmployeeDAO;
@@ -8,6 +7,7 @@ import in.efficio.model.DashboardStats;
 import in.efficio.model.Employee;
 import in.efficio.model.Project;
 import in.efficio.model.Task;
+import in.efficio.model.TeamLeader;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional; // Add this import
 import java.util.logging.Logger;
 
 @WebServlet("/TeamLeaderTaskServlet")
@@ -58,13 +59,81 @@ public class TeamLeaderTaskServlet extends HttpServlet {
         request.setAttribute("stats", stats);
 
         String contentType = request.getParameter("contentType");
+        String action = request.getParameter("action");
+        String taskIdStr = request.getParameter("taskId");
         if (contentType == null) {
             contentType = "tasks";
         }
         request.setAttribute("contentType", contentType);
 
         String includePath;
-        if ("tasks".equals(contentType)) {
+        if ("view".equals(action) && taskIdStr != null && !taskIdStr.isEmpty()) {
+            try {
+                int taskId = Integer.parseInt(taskIdStr);
+                Task task = taskDAO.getTaskById(taskId);
+                if (task == null || task.getAssignByTeamLeaderId() != teamLeaderId) {
+                    request.setAttribute("errorMessage", "Task not found or not assigned to you.");
+                    if ("pending-tasks".equals(contentType)) {
+                        request.setAttribute("pendingTasks", taskDAO.getTasksByStatus(teamLeaderId, "Pending"));
+                        includePath = "pending-tasks.jsp";
+                    } else if ("completed-tasks".equals(contentType)) {
+                        request.setAttribute("completedTasks", taskDAO.getTasksByStatus(teamLeaderId, "Completed"));
+                        includePath = "completed-tasks.jsp";
+                    } else {
+                        List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
+                        List<Project> projects = projectDAO.getProjects(teamLeaderId);
+                        request.setAttribute("tasks", tasks);
+                        request.setAttribute("projects", projects);
+                        includePath = "tasks.jsp";
+                    }
+                    request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
+                    return;
+                }
+
+                // Fetch additional details
+                Project project = projectDAO.getProjectById(task.getProjectId());
+                TeamLeader teamLeader = null;
+                Employee employee = null;
+                if (task.getAssignByTeamLeaderId() != 0) {
+                    teamLeader = new TeamLeader();
+                    teamLeader.setTeamleader_id(task.getAssignByTeamLeaderId());
+                    teamLeader.setName(employeeDAO.getTeamLeaderNameById(task.getAssignByTeamLeaderId()));
+                }
+                if (task.getAssignedToEmployeeId() != null) {
+                    // Handle Optional<Employee> case
+                    Object employeeResult = employeeDAO.getEmployeeById(task.getAssignedToEmployeeId());
+                    if (employeeResult instanceof Optional) {
+                        Optional<Employee> optionalEmployee = (Optional<Employee>) employeeResult;
+                        employee = optionalEmployee.orElse(null);
+                    } else {
+                        employee = (Employee) employeeResult;
+                    }
+                }
+
+                request.setAttribute("taskDetails", task);
+                request.setAttribute("project", project);
+                request.setAttribute("teamLeader", teamLeader);
+                request.setAttribute("employee", employee);
+                request.setAttribute("action", "view");
+                includePath = contentType + ".jsp"; // Use the same JSP
+                LOGGER.info("Viewing task ID: " + taskId + " for contentType: " + contentType);
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid task ID.");
+                if ("pending-tasks".equals(contentType)) {
+                    request.setAttribute("pendingTasks", taskDAO.getTasksByStatus(teamLeaderId, "Pending"));
+                    includePath = "pending-tasks.jsp";
+                } else if ("completed-tasks".equals(contentType)) {
+                    request.setAttribute("completedTasks", taskDAO.getTasksByStatus(teamLeaderId, "Completed"));
+                    includePath = "completed-tasks.jsp";
+                } else {
+                    List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
+                    List<Project> projects = projectDAO.getProjects(teamLeaderId);
+                    request.setAttribute("tasks", tasks);
+                    request.setAttribute("projects", projects);
+                    includePath = "tasks.jsp";
+                }
+            }
+        } else if ("tasks".equals(contentType)) {
             List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
             List<Project> projects = projectDAO.getProjects(teamLeaderId);
             List<Employee> teamMembers = employeeDAO.getTeamMembers(displayName);
@@ -146,7 +215,11 @@ public class TeamLeaderTaskServlet extends HttpServlet {
             request.setAttribute("teamMembers", teamMembers);
             includePath = "tasks-by-project.jsp";
         } else {
-            includePath = "tasks.jsp"; // Default to tasks.jsp for invalid contentType
+            List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
+            List<Project> projects = projectDAO.getProjects(teamLeaderId);
+            request.setAttribute("tasks", tasks);
+            request.setAttribute("projects", projects);
+            includePath = "tasks.jsp"; // Default
         }
 
         LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", contentType: " + contentType);

@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="proj-list-container">
-    <h1>Completed Projects</h1>
+
     <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
     <table>
         <thead>
@@ -25,17 +25,18 @@
         </thead>
         <tbody>
             <% 
-                List<Project> completedProjects = (List<Project>) request.getAttribute("completedProjects");
-                if (completedProjects != null && !completedProjects.isEmpty()) {
-                    for (Project project : completedProjects) {
+                String contentType = "completed-projects";
+                List<Project> projects = (List<Project>) request.getAttribute("projects");
+                if (projects != null && !projects.isEmpty()) {
+                    for (Project project : projects) {
             %>
                 <tr>
-                    <td><%= project.getProjectName() %></td>
+                    <td><%= project.getProjectName() != null ? project.getProjectName() : "N/A" %></td>
                     <td><%= project.getDescription() != null ? project.getDescription() : "N/A" %></td>
-                    <td><%= project.getStatus() %></td>
+                    <td><%= project.getStatus() != null ? project.getStatus() : "N/A" %></td>
                     <td><%= project.getPriority() != null ? project.getPriority() : "N/A" %></td>
                     <td>
-                        <a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=completed-projects&projectId=<%= project.getProjectId() %>" class="proj-btn">View</a>
+                        <a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=<%= contentType %>&action=view&projectId=<%= project.getProjectId() %>" class="proj-btn"><i class="fas fa-eye"></i> View</a>
                     </td>
                 </tr>
             <% 
