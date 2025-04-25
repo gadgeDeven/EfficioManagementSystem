@@ -1,0 +1,305 @@
+/* Professional CSS for Team Members and Employee Details Pages */
+:root {
+    --primary-color: #003087; /* Navy blue for headers and buttons */
+    --secondary-color: #f5f7fa; /* Soft gray for background */
+    --accent-color: #00a1a7; /* Teal for buttons and highlights */
+    --text-color: #2d3748; /* Dark gray for text */
+    --success-color: #28a745; /* Green for success alerts */
+    --error-color: #dc3545; /* Red for error alerts */
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+/* Team Size Badge */
+.team-size-badge {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+padding: 12px 20px;
+background: linear-gradient(135deg, #1a2a44, #003087);
+color: #ffffff;
+border-radius: 8px;
+font-size: 1.1rem;
+font-weight: 600;
+margin-bottom: 20px;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+width: 100%;
+}
+
+.team-size-badge i {
+font-size: 1.2rem;
+}
+
+/* Headings */
+h1 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+h2 {
+    color: var(--primary-color);
+    font-size: 1.4rem;
+    margin: 20px 0 15px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Back Button */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-bottom: 20px;
+}
+
+.back-btn:hover {
+    background-color: #00888f;
+    transform: translateY(-2px);
+}
+
+/* Alerts */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.alert-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+.alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+/* Tables */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+}
+
+.table-modern th,
+.table-modern td {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.table-modern th {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: none;
+}
+
+.table-modern td {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.table-modern tr:last-child td {
+    border-bottom: none;
+}
+
+.table-modern tr:hover {
+    background-color: rgba(0, 161, 167, 0.05);
+    transition: var(--transition);
+}
+
+/* Action Buttons */
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    background-color: #00888f;
+    transform: translateY(-2px);
+}
+
+/* No Data Message */
+.no-data {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Profile Card */
+.profile-card {
+    display: flex;
+    gap: 30px;
+    padding: 20px;
+    background-color: var(--secondary-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.profile-photo {
+    order: 2; /* Photo on the right */
+}
+
+.profile-photo i {
+    font-size: 100px;
+    color: var(--primary-color);
+    display: block;
+}
+
+.profile-details-content {
+    flex: 1;
+    order: 1; /* Content on the left */
+}
+
+.profile-details-content p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profile-details-content strong {
+    color: var(--primary-color);
+    font-weight: 600;
+    min-width: 120px;
+}
+
+/* Rating Stars */
+.rating-stars {
+    display: inline-block;
+    width: 100px;
+    height: 20px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23ccc" d="M10 15l-5.5 3 1-5.5L2 8l5.5-1L10 2l2.5 5L18 8l-3.5 4.5L15.5 18z"/></svg>') repeat-x;
+    background-size: 20px 20px;
+    position: relative;
+}
+
+.rating-stars span {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill="%23ffc107" d="M10 15l-5.5 3 1-5.5L2 8l5.5-1L10 2l2.5 5L18 8l-3.5 4.5L15.5 18z"/></svg>') repeat-x;
+    background-size: 20px 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .team-members-container,
+    .employee-details-container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+    }
+
+    .team-size-badge {
+        font-size: 1rem;
+        padding: 8px 16px;
+    }
+
+    .profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-photo {
+        order: 1; /* Photo on top in mobile */
+    }
+
+    .profile-details-content {
+        order: 2;
+    }
+
+    .profile-photo i {
+        font-size: 80px;
+    }
+
+    .profile-details-content p {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .table-modern {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .table-modern th,
+    .table-modern td {
+        min-width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .back-btn,
+    .action-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .profile-details-content p {
+        font-size: 1rem;
+    }
+
+    .team-size-badge {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+}
