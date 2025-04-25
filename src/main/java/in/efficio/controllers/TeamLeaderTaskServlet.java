@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional; // Add this import
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @WebServlet("/TeamLeaderTaskServlet")
@@ -230,6 +230,7 @@ public class TeamLeaderTaskServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        LOGGER.info("POST request received at TeamLeaderTaskServlet with action: " + request.getParameter("action"));
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userName") == null) {
             response.sendRedirect(
