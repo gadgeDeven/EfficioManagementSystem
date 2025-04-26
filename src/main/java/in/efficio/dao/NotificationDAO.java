@@ -62,11 +62,11 @@ public class NotificationDAO {
         return notifications;
     }
 
-    public boolean markNotificationsAsSeen(int teamLeaderId) {
-        String query = "UPDATE notification SET is_seen = TRUE WHERE teamleader_id = ? AND is_seen = FALSE";
+    public boolean markNotificationAsSeen(int notificationId) {
+        String query = "UPDATE notification SET is_seen = TRUE WHERE notification_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, teamLeaderId);
+            ps.setInt(1, notificationId);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();

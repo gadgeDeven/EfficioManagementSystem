@@ -18,6 +18,7 @@ public class Employee {
     private String status;
     private List<Project> projects;
     private Set<Integer> teamLeaderIds;
+    private List<Task> tasks;
     
     //Getter and Setters
 	public int getEmployee_id() {
@@ -101,6 +102,14 @@ public class Employee {
     public void setTeamLeaderIds(Set<Integer> teamLeaderIds) {
         this.teamLeaderIds = teamLeaderIds;
     }
+	public List<Task> getTasks() {
+		return tasks;
+	}
+	public void setTasks(List<Task> tasks) {
+		this.tasks = tasks;
+	}
+    
+    
     
     //Getter and Setters
     

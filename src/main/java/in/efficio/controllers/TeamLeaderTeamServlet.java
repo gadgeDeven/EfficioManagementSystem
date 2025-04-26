@@ -1,4 +1,3 @@
-
 package in.efficio.controllers;
 
 import in.efficio.dao.EmployeeDAO;
@@ -6,6 +5,8 @@ import in.efficio.dao.ProjectDAO;
 import in.efficio.dao.TaskDAO;
 import in.efficio.model.DashboardStats;
 import in.efficio.model.Employee;
+import in.efficio.model.Project;
+import in.efficio.model.Task;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -63,16 +64,32 @@ public class TeamLeaderTeamServlet extends HttpServlet {
         String includePath;
         if ("team-members".equals(contentType)) {
             List<Employee> teamMembers = employeeDAO.getTeamMembers(displayName);
+            // Fetch tasks for each team member
+            for (Employee employee : teamMembers) {
+                List<Task> tasks = employeeDAO.getTasksForEmployee(employee.getEmployee_id());
+                employee.setTasks(tasks);
+            }
             request.setAttribute("teamMembers", teamMembers);
+            request.setAttribute("teamMemberCount", teamMembers.size());
             includePath = "team-members.jsp";
         } else if ("employee-details".equals(contentType)) {
             String employeeIdStr = request.getParameter("employeeId");
             if (employeeIdStr != null && !employeeIdStr.isEmpty()) {
                 try {
                     int employeeId = Integer.parseInt(employeeIdStr);
-                    Optional<Employee> employee = employeeDAO.getEmployeeById(employeeId);
-                    if (employee != null) {
+                    Optional<Employee> employeeOpt = employeeDAO.getEmployeeById(employeeId);
+                    if (employeeOpt.isPresent()) {
+                        Employee employee = employeeOpt.get();
+                        // Fetch tasks for the employee
+                        List<Task> tasks = employeeDAO.getTasksForEmployee(employeeId);
+                        // Fetch projects for the employee
+                        List<Project> projects = employeeDAO.getProjectsForEmployee(employeeId);
+                        employee.setTasks(tasks);
+                        employee.setProjects(projects);
                         request.setAttribute("employee", employee);
+                        request.setAttribute("currentTeamLeaderId", teamLeaderId); // Pass current team leader ID
+                        request.setAttribute("from", request.getParameter("from"));
+                        request.setAttribute("projectId", request.getParameter("projectId"));
                         includePath = "employee-details.jsp";
                     } else {
                         request.setAttribute("errorMessage", "Employee not found.");
@@ -87,7 +104,7 @@ public class TeamLeaderTeamServlet extends HttpServlet {
                 includePath = "team-members.jsp";
             }
         } else {
-            includePath = "team-members.jsp"; // Default to team-members.jsp
+            includePath = "team-members.jsp";
         }
 
         LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", contentType: " + contentType);
@@ -98,7 +115,6 @@ public class TeamLeaderTeamServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Handle any POST requests (e.g., updating team member details)
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userName") == null) {
             response.sendRedirect(
@@ -118,8 +134,7 @@ public class TeamLeaderTeamServlet extends HttpServlet {
         updateStats(stats, teamLeaderId);
         request.setAttribute("stats", stats);
 
-        String includePath = "team-members.jsp"; // Default includePath
-        // Add POST logic here if needed (e.g., updating employee details)
+        String includePath = "team-members.jsp";
         request.setAttribute("includePath", includePath);
         request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
     }

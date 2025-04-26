@@ -477,26 +477,32 @@ public class ProjectDAO {
         return "Unknown Project";
     }
     
-    public List<Employee> getEmployeesByProjectId(int projectId) {
-        List<Employee> employees = new ArrayList<>();
-        String query = "SELECT employee_id, name, email " +
-                      "FROM employee " +
-                      "WHERE assign_project_id = ?";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, projectId);
-            ResultSet rs = ps.executeQuery();
+ // In ProjectDAO.java
+    public List<Project> getProjectsByEmployee(int employeeId) {
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT p.project_id, p.project_name, p.description, p.start_date, p.end_date, p.status, p.priority " +
+                     "FROM projects p JOIN project_assignments pa ON p.project_id = pa.project_id " +
+                     "WHERE pa.employee_id = ?";
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, employeeId);
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Employee emp = new Employee();
-                emp.setEmployee_id(rs.getInt("employee_id"));
-                emp.setName(rs.getString("name"));
-                emp.setEmail(rs.getString("email"));
-                employees.add(emp);
+                Project project = new Project();
+                project.setProjectId(rs.getInt("project_id"));
+                project.setProjectName(rs.getString("project_name"));
+                project.setDescription(rs.getString("description"));
+                project.setStartDate(rs.getDate("start_date"));
+                project.setEndDate(rs.getDate("end_date"));
+                project.setStatus(rs.getString("status"));
+                project.setPriority(rs.getString("priority"));
+                projects.add(project);
             }
-            System.out.println("Fetched " + employees.size() + " employees for projectId: " + projectId);
         } catch (SQLException e) {
-            e.printStackTrace();
+        	e.printStackTrace();
         }
-        return employees;
+        return projects;
     }
+    
+   
 }
