@@ -1,26 +1,28 @@
 /* Root Variables for Consistent Colors */
 :root {
     /* Project List Colors */
-    --list-primary-color: #1a3c6d; /* Navy Blue */
-    --list-secondary-color: #2d3748; /* Dark Gray */
-    --list-accent-color: #4c9a9a; /* Soft Teal */
-    --list-background-color: #f9fafb; /* Off-White */
-    --list-card-bg: #ffffff; /* White */
-    --list-text-primary: #2d3748; /* Dark Gray */
-    --list-text-secondary: #4a5568; /* Medium Gray */
-    --list-border-color: #e2e8f0; /* Light Gray */
-    --list-error-color: #c53030; /* Soft Red */
-    --list-success-color: #2f855a; /* Muted Green */
+    --list-primary-color: #1e3a8a; /* Deep Blue for headers  */
+    --list-secondary-color: #0a192f; /* Very Dark Blue for backgrounds (professional + serious) */
+    --list-accent-color: #00bcd4; /* Bright Cyan-Blue for highlights (fresh energy) */
+    --list-background-color: #f0f4f8; /* Soft Bluish White for background (very clean) */
+    --list-card-bg: #ffffff; /* Pure White for cards */
+    --list-text-primary: #0f172a; /* Dark Navy text */
+    --list-text-secondary: #64748b; /* Cool Gray-Blue for secondary text */
+    --list-border-color: #cbd5e1; /* Soft Cool Gray for borders */
+    --list-error-color: #ff6b6b; /* Strong Coral Red for errors */
+    --list-success-color: #2dd4bf; /* Aqua Green for success (modern feel) */
 
     /* Project Details and Edit Colors */
-    --proj-details-primary: #1a3c6d; /* Navy Blue */
-    --proj-details-accent: #4c9a9a; /* Soft Teal */
-    --proj-details-text-secondary: #4a5568; /* Medium Gray */
+    --proj-details-primary: #1e3a8a; /* Dark Navy for headers */
+    --proj-details-accent: #00bcd4; /* Bright Cyan-Blue for highlights */
+    --proj-details-text-secondary: #64748b; /* Cool Gray for secondary text */
 
-    --border-radius: 6px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    --font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --border-radius: 12px; /* Modern, slightly larger rounding */
+    --box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15); /* Deeper, smooth shadow */
+    --font-family: 'Poppins', 'Inter', 'Roboto', 'Segoe UI', sans-serif;
 }
+
+
 
 /* Global Reset and Base Styles */
 * {
@@ -33,7 +35,7 @@ body {
     font-family: var(--font-family);
     background: var(--list-background-color);
     color: var(--list-text-primary);
-    line-height: 1.5;
+    line-height: 1.6;
     font-size: 15px;
 }
 
@@ -46,7 +48,7 @@ body {
 
 /* Success Message */
 p.proj-success-msg {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--list-success-color);
     text-align: center;
     padding: 16px;
@@ -60,7 +62,7 @@ p.proj-success-msg {
 
 /* Error Message */
 p.proj-no-data {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--list-error-color);
     text-align: center;
     padding: 16px;
@@ -84,9 +86,9 @@ table {
 }
 
 th, td {
-    padding: 12px 14px;
+    padding: 14px 16px;
     text-align: center;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--list-text-primary);
     border-bottom: 1px solid var(--list-border-color);
 }
@@ -94,10 +96,10 @@ th, td {
 th {
     background: var(--list-primary-color);
     color: #ffffff;
-    font-weight: 500;
-    font-size: 0.8rem;
+    font-weight: 600;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -112,7 +114,7 @@ tr:nth-child(even) td {
 }
 
 tr:hover td {
-    background: #edf2f7;
+    background: #e5e7eb;
     transition: background 0.2s ease;
 }
 
@@ -120,74 +122,71 @@ tr:hover td {
 .proj-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 7px 14px;
+    gap: 6px;
+    padding: 8px 16px;
     border: none;
-    border-radius: 5px;
-    font-size: 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    background: linear-gradient(135deg, var(--list-accent-color), #60a5fa); /* Shiny gradient */
+    color: #ffffff;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .proj-btn.proj-success {
     background: var(--list-success-color);
-    color: #ffffff;
 }
 
 .proj-btn.proj-danger {
     background: var(--list-error-color);
-    color: #ffffff;
-}
-
-.proj-btn:not(.proj-success):not(.proj-danger) {
-    background: var(--list-accent-color);
-    color: #ffffff;
 }
 
 .proj-btn:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
 .proj-btn.proj-success:hover {
-    background: #276749;
+    background: #059669;
 }
 
 .proj-btn.proj-danger:hover {
-    background: #9b2c2c;
+    background: #dc2626;
 }
 
 .proj-btn:not(.proj-success):not(.proj-danger):hover {
-    background: #3b8282;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
 .proj-back-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 7px 14px;
+    gap: 6px;
+    padding: 8px 16px;
     background: var(--list-secondary-color);
     color: #ffffff;
     border: none;
-    border-radius: 5px;
-    font-size: 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
 }
 
 .proj-back-btn:hover {
-    background: #1a202c;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #1f2937;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
 /* Project Details */
 .proj-details {
     width: 100%;
-    background: var(--list-background-color);
+    background: var(--list-card-bg);
     border-radius: var(--border-radius);
-    padding: 28px;
+    padding: 30px;
     box-shadow: var(--box-shadow);
     position: relative;
 }
@@ -198,7 +197,7 @@ tr:hover td {
     align-items: center;
     justify-content: flex-start;
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .proj-header .proj-back-btn {
@@ -209,7 +208,7 @@ tr:hover td {
 }
 
 .proj-header h1 {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 600;
     color: var(--proj-details-primary);
     text-align: center;
@@ -217,7 +216,7 @@ tr:hover td {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     margin: 0;
 }
 
@@ -225,31 +224,32 @@ tr:hover td {
 .proj-details-grid {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 28px;
+    gap: 24px;
+    margin-bottom: 30px;
     align-items: center;
 }
 
 .proj-details-grid p.proj-description,
 .proj-progress-bar {
     width: 100%;
-    max-width: 650px;
+    max-width: 700px;
     background: var(--list-card-bg);
-    padding: 14px;
-    border-radius: 5px;
+    padding: 16px;
+    border-radius: 6px;
     box-shadow: var(--box-shadow);
     text-align: left;
-    border-left: 3px solid var(--proj-details-accent);
-    transition: background 0.2s ease;
+    border-left: 4px solid var(--proj-details-accent);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .proj-details-grid p.proj-description:hover,
 .proj-progress-bar:hover {
-    background: #edf2f7;
+    background: #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .proj-details-grid p.proj-description {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--proj-details-text-secondary);
 }
 
@@ -257,102 +257,136 @@ tr:hover td {
     color: var(--proj-details-primary);
     font-weight: 500;
     display: inline-block;
-    min-width: 90px;
+    min-width: 100px;
 }
 
 .proj-date-status-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    gap: 16px;
     width: 100%;
-    max-width: 650px;
-    margin: 14px auto;
+    max-width: 700px;
+    margin: 16px auto;
 }
 
 .proj-date-status-grid p {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--proj-details-text-secondary);
     background: var(--list-card-bg);
-    padding: 14px;
-    border-radius: 5px;
+    padding: 16px;
+    border-radius: 6px;
     box-shadow: var(--box-shadow);
     text-align: left;
-    border-left: 3px solid var(--proj-details-accent);
-    transition: background 0.2s ease;
+    border-left: 4px solid var(--proj-details-accent);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .proj-date-status-grid p:hover {
-    background: #edf2f7;
+    background: #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .proj-date-status-grid strong {
     color: var(--proj-details-primary);
     font-weight: 500;
     display: inline-block;
-    min-width: 90px;
+    min-width: 100px;
 }
 
 /* Progress Bar */
 .proj-progress-bar {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
     justify-content: center;
     width: 100%;
-    max-width: 650px;
+    max-width: 700px;
     background: var(--list-card-bg);
-    padding: 14px;
-    border-radius: 5px;
+    padding: 16px;
+    border-radius: 6px;
     box-shadow: var(--box-shadow);
-    border-left: 3px solid var(--proj-details-accent);
-    transition: background 0.2s ease;
+    border-left: 4px solid var(--proj-details-accent);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .proj-progress-bar:hover {
-    background: #edf2f7;
+    background: #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .proj-progress-bar label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--proj-details-primary);
 }
 
 .proj-progress-bar .progress-container {
     flex: 1;
-    height: 12px;
+    height: 14px;
     background: var(--list-border-color);
-    border-radius: 6px;
+    border-radius: 7px;
     overflow: hidden;
 }
 
 .proj-progress-bar .progress {
     height: 100%;
-    background: var(--proj-details-accent);
-    transition: width 0.3s ease;
+    background: linear-gradient(135deg, var(--proj-details-accent), #60a5fa); /* Shiny gradient */
+    transition: width 0.4s ease;
 }
 
 .proj-progress-bar span {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--proj-details-primary);
 }
 
+/* Team Leaders List */
+.proj-team-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.proj-team-item {
+    flex: 0 0 calc(25% - 12px); /* 4 per row with gap */
+    background: var(--list-card-bg);
+    border: 1px solid var(--list-border-color);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: var(--box-shadow);
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    font-size: 0.9rem;
+    color: var(--proj-details-primary);
+}
+
+.proj-team-item:hover {
+    background: #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
 /* Employees List */
 .proj-details h3 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--proj-details-primary);
-    margin: 28px 0 14px;
+    margin: 30px 0 16px;
     text-align: center;
 }
 
 .proj-employee-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 14px;
+    gap: 16px;
     justify-content: center;
-    margin-bottom: 28px;
+    margin-bottom: 30px;
     width: 100%;
     max-width: 850px;
     margin-left: auto;
@@ -360,25 +394,26 @@ tr:hover td {
 }
 
 .proj-employee-item {
-    flex: 0 0 calc(25% - 10px); /* 4 per row with gap */
+    flex: 0 0 calc(25% - 12px); /* 4 per row with gap */
     background: var(--list-card-bg);
     border: 1px solid var(--list-border-color);
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: 6px;
+    padding: 12px;
     text-align: center;
     box-shadow: var(--box-shadow);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .proj-employee-item:hover {
-    background: #edf2f7;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: #e5e7eb;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .proj-employee-item a {
     color: var(--proj-details-primary);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 400;
     display: block;
 }
@@ -390,26 +425,26 @@ tr:hover td {
 /* Actions */
 .proj-actions {
     display: flex;
-    gap: 14px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-top: 28px;
+    margin-top: 30px;
     justify-content: center;
 }
 
 .proj-actions .proj-btn:not(.proj-success):not(.proj-danger) {
-    background: var(--proj-details-accent);
+    background: linear-gradient(135deg, var(--proj-details-accent), #60a5fa);
 }
 
 .proj-actions .proj-btn:not(.proj-success):not(.proj-danger):hover {
-    background: #3b8282;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
 /* Edit Project Form */
 .proj-edit {
     width: 100%;
-    background: var(--list-background-color);
+    background: var(--list-card-bg);
     border-radius: var(--border-radius);
-    padding: 20px;
+    padding: 24px;
     box-shadow: var(--box-shadow);
     position: relative;
     min-height: auto;
@@ -420,118 +455,122 @@ tr:hover td {
 .proj-form-group {
     display: flex;
     flex-direction: column;
-    gap: 7px;
-    margin-bottom: 14px;
-    max-width: 650px;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .proj-form-group label {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--proj-details-primary);
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
 
 .proj-form-group input,
 .proj-form-group textarea {
     width: 100%;
-    padding: 10px 14px;
-    font-size: 0.9rem;
+    padding: 12px 16px;
+    font-size: 0.95rem;
     color: var(--proj-details-text-secondary);
     background: var(--list-card-bg);
     border: 1px solid var(--list-border-color);
-    border-radius: 5px;
+    border-radius: 6px;
     box-shadow: var(--box-shadow);
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .proj-form-group input:focus,
 .proj-form-group textarea:focus {
     outline: none;
     border-color: var(--proj-details-accent);
-    background: #edf2f7;
+    background: #f9fafb;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .proj-form-group textarea {
-    min-height: 90px;
+    min-height: 100px;
     resize: vertical;
 }
 
 .proj-form-actions {
     display: flex;
     justify-content: center;
-    margin-top: 14px;
+    margin-top: 16px;
 }
 
 .proj-form-actions .proj-btn {
-    background: var(--proj-details-accent);
+    background: linear-gradient(135deg, var(--proj-details-accent), #60a5fa);
     color: #ffffff;
-    padding: 9px 18px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
-    font-size: 0.85rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s ease, box-shadow 0.2s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
     width: fit-content;
 }
 
 .proj-form-actions .proj-btn:hover {
-    background: #3b8282;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
     .proj-list-container {
-        padding: 14px 10px;
+        padding: 16px 12px;
     }
 
     .proj-details, .proj-edit {
-        padding: 18px;
+        padding: 20px;
     }
 
     .proj-date-status-grid {
         grid-template-columns: 1fr;
-        max-width: 350px;
+        max-width: 400px;
     }
 
+    .proj-team-list,
     .proj-employee-list {
-        gap: 10px;
+        gap: 12px;
     }
 
+    .proj-team-item,
     .proj-employee-item {
-        flex: 0 0 calc(50% - 7px); /* 2 per row */
+        flex: 0 0 calc(50% - 8px); /* 2 per row */
     }
 
     th, td {
-        padding: 10px 12px;
-        font-size: 0.8rem;
+        padding: 12px 14px;
+        font-size: 0.85rem;
     }
 
     .proj-btn, .proj-back-btn {
-        padding: 5px 10px;
-        font-size: 0.75rem;
+        padding: 6px 12px;
+        font-size: 0.8rem;
     }
 
     .proj-header h1 {
-        font-size: 1.6rem;
+        font-size: 1.7rem;
     }
 
     .proj-form-group input,
     .proj-form-group textarea {
-        padding: 9px 12px;
-        font-size: 0.85rem;
+        padding: 10px 14px;
+        font-size: 0.9rem;
     }
 }
 
 @media (max-width: 768px) {
     .proj-list-container {
-        padding: 10px 6px;
+        padding: 12px 8px;
     }
 
     table {
@@ -541,60 +580,61 @@ tr:hover td {
     }
 
     th, td {
-        padding: 8px 10px;
-        font-size: 0.75rem;
-        min-width: 90px;
+        padding: 10px 12px;
+        font-size: 0.8rem;
+        min-width: 100px;
     }
 
     .proj-header h1 {
-        font-size: 1.4rem;
+        font-size: 1.5rem;
     }
 
     .proj-details h3 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
+    .proj-team-item,
     .proj-employee-item {
-        flex: 0 0 calc(100% - 7px); /* 1 per row */
+        flex: 0 0 calc(100% - 8px); /* 1 per row */
     }
 
     .proj-btn, .proj-back-btn {
-        padding: 5px 9px;
-        font-size: 0.7rem;
+        padding: 6px 10px;
+        font-size: 0.75rem;
     }
 
     .proj-form-group input,
     .proj-form-group textarea {
-        padding: 7px 10px;
-        font-size: 0.8rem;
+        padding: 8px 12px;
+        font-size: 0.85rem;
     }
 }
 
 @media (max-width: 480px) {
     .proj-list-container {
-        padding: 6px 3px;
+        padding: 8px 4px;
     }
 
     .proj-details, .proj-edit {
-        padding: 14px;
+        padding: 16px;
     }
 
     .proj-header h1 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
     }
 
     .proj-details h3 {
-        font-size: 1rem;
+        font-size: 1.1rem;
     }
 
     th, td {
-        padding: 7px 9px;
-        font-size: 0.65rem;
+        padding: 8px 10px;
+        font-size: 0.7rem;
     }
 
     .proj-btn, .proj-back-btn {
-        padding: 4px 7px;
-        font-size: 0.65rem;
+        padding: 5px 8px;
+        font-size: 0.7rem;
     }
 
     .proj-form-group input,
@@ -605,7 +645,7 @@ tr:hover td {
 
     .proj-details-grid p.proj-description,
     .proj-progress-bar {
-        padding: 14px;
+        padding: 12px;
         max-width: 100%;
     }
 }

@@ -25,7 +25,7 @@ public class TeamLeaderProjectServlet extends HttpServlet {
     @Override
     public void init() {
         projectDAO = new ProjectDAO();
-        employeeDAO = new EmployeeDAO(); // Initialize employeeDAO to resolve the error
+        employeeDAO = new EmployeeDAO();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class TeamLeaderProjectServlet extends HttpServlet {
             projects = projectDAO.getProjectsByStatusTeam(teamLeaderId, "Completed");
         } else if ("assign-projects".equals(contentType)) {
             projects = projectDAO.getProjects(teamLeaderId);
-            request.setAttribute("allEmployees", employeeDAO.getAllEmployees()); // Fetch all employees
+            request.setAttribute("allEmployees", employeeDAO.getAllEmployees());
             if (projectIdStr != null && !projectIdStr.isEmpty()) {
                 try {
                     int projectId = Integer.parseInt(projectIdStr);
@@ -68,7 +68,7 @@ public class TeamLeaderProjectServlet extends HttpServlet {
                         request.setAttribute("errorMessage", "Project not found or not assigned to you.");
                     } else {
                         request.setAttribute("selectedProject", selectedProject);
-                        request.setAttribute("assignedEmployees", employeeDAO.getEmployeesByProject(projectId)); // Use EmployeeDAO
+                        request.setAttribute("assignedEmployees", employeeDAO.getEmployeesByProject(projectId));
                     }
                 } catch (NumberFormatException e) {
                     request.setAttribute("errorMessage", "Invalid project ID.");
@@ -90,10 +90,9 @@ public class TeamLeaderProjectServlet extends HttpServlet {
                              contentType != null && contentType.equals("completed-projects") ? "Completed" : "") +
                             " project not found or not assigned to you.");
                 } else {
-                    // Fetch additional details for the project
                     Integer progress = projectDAO.getProjectProgress(projectId);
                     List<TeamLeader> teamLeaders = projectDAO.getAssignedTeamLeaders(projectId);
-                    List<Employee> employees = employeeDAO.getEmployeesByProject(projectId); // Use EmployeeDAO instead of ProjectDAO
+                    List<Employee> employees = employeeDAO.getEmployeesByProject(projectId);
 
                     request.setAttribute("projectDetails", selectedProject);
                     request.setAttribute("teamLeaders", teamLeaders);
@@ -129,8 +128,7 @@ public class TeamLeaderProjectServlet extends HttpServlet {
             request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
             return;
         }
-        
-     // In TeamLeaderProjectServlet.java
+
         if ("project-details".equals(contentType)) {
             String projectIdStr1 = request.getParameter("projectId");
             LOGGER.info("Received projectId: " + projectIdStr1);
@@ -163,7 +161,11 @@ public class TeamLeaderProjectServlet extends HttpServlet {
         request.setAttribute("projects", projects);
         request.setAttribute("selectedProject", selectedProject);
         request.setAttribute("contentType", contentType);
-        request.setAttribute("includePath", contentType + ".jsp");
+        if ("projects".equals(contentType) || "pending-projects".equals(contentType) || "completed-projects".equals(contentType)) {
+            request.setAttribute("includePath", "projects.jsp");
+        } else {
+            request.setAttribute("includePath", contentType + ".jsp");
+        }
         request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
     }
 
@@ -193,7 +195,6 @@ public class TeamLeaderProjectServlet extends HttpServlet {
                 int projectId = Integer.parseInt(projectIdStr);
                 int employeeId = Integer.parseInt(employeeIdStr);
 
-                // Verify project is assigned to the team leader
                 List<Project> teamLeaderProjects = projectDAO.getProjects(teamLeaderId);
                 if (!teamLeaderProjects.stream().anyMatch(p -> p.getProjectId() == projectId)) {
                     request.setAttribute("errorMessage", "You are not authorized to assign employees to this project.");
@@ -216,7 +217,6 @@ public class TeamLeaderProjectServlet extends HttpServlet {
             LOGGER.warning("Invalid action received: " + action);
         }
 
-        // Redirect back to assign-projects page with the same project selected
         String projectId = request.getParameter("projectId");
         response.sendRedirect(request.getContextPath() + "/TeamLeaderProjectServlet?contentType=assign-projects&projectId=" + projectId);
     }
