@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Tasks</title>
+    <title>Task List</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/lists.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/view-projects.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
@@ -15,8 +15,27 @@
         // Initialize variables
         String action = request.getParameter("action");
         String contentType = request.getParameter("contentType") != null ? request.getParameter("contentType") : "tasks";
+        String taskFilter = request.getParameter("taskFilter") != null ? request.getParameter("taskFilter") : "all";
         String successMessage = (String) request.getAttribute("successMessage");
         String errorMessage = (String) request.getAttribute("errorMessage");
+
+        // Debug output
+        List<Task> pendingTasks = (List<Task>) request.getAttribute("pendingTasks");
+        List<Task> completedTasks = (List<Task>) request.getAttribute("completedTasks");
+        System.out.println("tasks.jsp: contentType = " + contentType + ", taskFilter = " + taskFilter +
+                          ", pendingTasks size = " + (pendingTasks != null ? pendingTasks.size() : "null") +
+                          ", completedTasks size = " + (completedTasks != null ? completedTasks.size() : "null"));
+
+        // Determine task list based on taskFilter
+        List<Task> tasks = null;
+        if ("pending".equals(taskFilter)) {
+            tasks = pendingTasks;
+        } else if ("completed".equals(taskFilter)) {
+            tasks = completedTasks;
+        } else {
+            tasks = (List<Task>) request.getAttribute("tasks");
+        }
+        List<Project> projects = (List<Project>) request.getAttribute("projects");
 
         // Check for view action
         if ("view".equals(action)) {
@@ -38,7 +57,7 @@
             <% } else { %>
                 <div class="proj-details">
                     <div class="proj-header">
-                        <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>'"><i class="fas fa-arrow-left"></i> Back</button>
+                        <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>&taskFilter=<%= taskFilter %>'"><i class="fas fa-arrow-left"></i> Back</button>
                         <h1><i class="fas fa-tasks"></i> <%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></h1>
                     </div>
                     <div class="proj-details-grid">
@@ -56,16 +75,7 @@
                             <span><%= progress != null ? progress : 0 %>%</span>
                         </div>
                     </div>
-                    <h3><i class="fas fa-user-tie"></i> Assigned By Team Leader</h3>
-                    <div class="proj-team-list">
-                        <% if (teamLeader != null) { %>
-                            <div class="proj-team-item">
-                                <%= teamLeader.getName() != null ? teamLeader.getName() : "N/A" %>
-                            </div>
-                        <% } else { %>
-                            <p class="proj-no-data">No team leader assigned.</p>
-                        <% } %>
-                    </div>
+                    
                     <h3><i class="fas fa-users"></i> Assigned Employee</h3>
                     <div class="proj-employee-list">
                         <% if (employee != null) { %>
@@ -81,14 +91,8 @@
     <%
         } else {
             // List View
-            List<Task> tasks = (List<Task>) request.getAttribute("tasks");
-            List<Project> projects = (List<Project>) request.getAttribute("projects");
-            // Debug output
-            System.out.println("tasks.jsp: tasks = " + (tasks != null ? tasks.size() : "null"));
-            System.out.println("tasks.jsp: projects = " + (projects != null ? projects.size() : "null"));
+            System.out.println("tasks.jsp List View: taskFilter = " + taskFilter + ", tasks size = " + (tasks != null ? tasks.size() : "null"));
     %>
-            <h1>Tasks</h1>
-            <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome'"><i class="fas fa-arrow-left"></i> Back</button>
             <% if (successMessage != null) { %>
                 <p class="proj-no-data success"><i class="fas fa-check-circle"></i> <%= successMessage %></p>
             <% } %>
@@ -100,7 +104,11 @@
                     <thead>
                         <tr>
                             <th>Task Title</th>
-                            <th>Project</th>
+                            <% if ("all".equals(taskFilter)) { %>
+                                <th>Project</th>
+                            <% } else { %>
+                                <th>Description</th>
+                            <% } %>
                             <th>Status</th>
                             <th>Deadline</th>
                             <th>Assigned To</th>
@@ -111,32 +119,36 @@
                         <% for (Task task : tasks) { %>
                             <tr>
                                 <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
-                                <td>
-                                    <% 
-                                        String projectName = "Unknown";
-                                        if (projects != null && task != null) {
-                                            for (Project project : projects) {
-                                                if (project != null && project.getProjectId() == task.getProjectId()) {
-                                                    projectName = project.getProjectName() != null ? project.getProjectName() : "N/A";
-                                                    break;
+                                <% if ("all".equals(taskFilter)) { %>
+                                    <td>
+                                        <% 
+                                            String projectName = "Unknown";
+                                            if (projects != null && task != null) {
+                                                for (Project project : projects) {
+                                                    if (project != null && project.getProjectId() == task.getProjectId()) {
+                                                        projectName = project.getProjectName() != null ? project.getProjectName() : "N/A";
+                                                        break;
+                                                    }
                                                 }
                                             }
-                                        }
-                                    %>
-                                    <%= projectName %>
-                                </td>
+                                        %>
+                                        <%= projectName %>
+                                    </td>
+                                <% } else { %>
+                                    <td><%= task.getDescription() != null ? task.getDescription() : "N/A" %></td>
+                                <% } %>
                                 <td><%= task.getStatus() != null ? task.getStatus() : "N/A" %></td>
                                 <td><%= task.getDeadlineDate() != null ? task.getDeadlineDate() : "N/A" %></td>
                                 <td><%= task.getAssignedToEmployeeId() != null ? "Employee ID: " + task.getAssignedToEmployeeId() : "Unassigned" %></td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>&action=view&taskId=<%= task.getTaskId() %>" class="proj-btn"><i class="fas fa-eye"></i> View</a>
+                                    <a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>&taskFilter=<%= taskFilter %>&action=view&taskId=<%= task.getTaskId() %>" class="proj-btn"><i class="fas fa-eye"></i> View</a>
                                 </td>
                             </tr>
                         <% } %>
                     </tbody>
                 </table>
             <% } else { %>
-                <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> No tasks found.</p>
+                <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> No <%= "pending".equals(taskFilter) ? "pending" : "completed".equals(taskFilter) ? "completed" : "" %> tasks found.</p>
             <% } %>
     <% } %>
 </div>

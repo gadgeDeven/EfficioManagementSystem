@@ -20,8 +20,6 @@
 </head>
 <body>
     <div class="create-project-container">
-        
-        
         <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
         <% String successMessage = (String) request.getAttribute("successMessage"); %>
         <% if (errorMessage != null) { %>
@@ -33,6 +31,7 @@
         
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="post">
             <input type="hidden" name="action" value="createTask">
+            <input type="hidden" name="status" value="Pending"> <!-- Set status to Pending -->
             
             <div class="form-group">
                 <label for="projectId"><i class="fas fa-project-diagram"></i> Project:</label>

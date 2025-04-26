@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="in.efficio.model.DashboardStats"%>
 <%
@@ -8,7 +7,7 @@
     }
     DashboardStats stats = (DashboardStats) request.getAttribute("stats");
     if (stats == null) {
-        stats = new DashboardStats(); // Initialize with default values
+        stats = new DashboardStats();
     }
 %>
 <style>
@@ -53,6 +52,7 @@
         <p><i class="fas fa-tasks"></i> Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="tasks">
+            <input type="hidden" name="taskFilter" value="all">
             <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
@@ -61,6 +61,7 @@
         <p><i class="fas fa-hourglass-half"></i> Pending Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="pending-tasks">
+            <input type="hidden" name="taskFilter" value="pending">
             <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
@@ -69,6 +70,7 @@
         <p><i class="fas fa-check-circle"></i> Completed Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="completed-tasks">
+            <input type="hidden" name="taskFilter" value="completed">
             <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>

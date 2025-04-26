@@ -1,4 +1,3 @@
-
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="in.efficio.model.DashboardStats, java.util.List, in.efficio.model.Task"%>
 
@@ -37,7 +36,8 @@
                     <li><a href="#" id="toggleSidebar"><i class="fas fa-bars"></i> <span>Menu</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome" <%= "welcome".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=projects" <%= "projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-project-diagram"></i> <span>Projects</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=tasks" <%= "tasks".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tasks"></i> <span>Tasks</span></a></li>
+                    <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=tasks&taskFilter=all" <%= "tasks".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tasks"></i> <span>Tasks</span></a></li>
+
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=create-task" <%= "create-task".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-plus-circle"></i> <span>Create Task</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=assign-task" <%= "assign-task".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-check"></i> <span>Assign Task</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderAssignmentServlet?contentType=assign-projects" <%= "assign-projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-plus"></i> <span>Assign Projects</span></a></li>
@@ -114,7 +114,7 @@
                     <% 
                         String includePath = (String) request.getAttribute("includePath");
                         if (includePath == null) {
-                            includePath = "welcome.jsp"; // Default to welcome.jsp for TeamLeaderDashboard servlet
+                            includePath = "welcome.jsp";
                         }
                     %>
                     <jsp:include page="<%=includePath%>" />

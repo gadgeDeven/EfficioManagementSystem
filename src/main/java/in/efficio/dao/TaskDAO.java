@@ -39,7 +39,7 @@ public class TaskDAO {
     }
 
     public void assignTaskToEmployee(int taskId, int employeeId, int projectId, int teamLeaderId) {
-        String taskQuery = "UPDATE task SET assigned_to_employee_id = ?, status = 'In Progress' WHERE task_id = ?";
+        String taskQuery = "UPDATE task SET assigned_to_employee_id = ? WHERE task_id = ?";
         String worksOnQuery = "UPDATE works_on SET task_id = ? WHERE project_id = ? AND teamleader_id = ? AND employee_id = ?";
         Connection con = null;
         try {
@@ -212,7 +212,7 @@ public class TaskDAO {
         List<Task> tasks = new ArrayList<>();
         String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
                       "t.assign_by_teamleader_id, t.assigned_to_employee_id " +
-              "FROM task t WHERE t.project_id = ? AND t.assign_by_teamleader_id = ?";
+                      "FROM task t WHERE t.project_id = ? AND t.assign_by_teamleader_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, projectId);

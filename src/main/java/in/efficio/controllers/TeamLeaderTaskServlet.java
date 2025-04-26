@@ -66,6 +66,17 @@ public class TeamLeaderTaskServlet extends HttpServlet {
         }
         request.setAttribute("contentType", contentType);
 
+        // Determine taskFilter based on contentType
+        String taskFilter;
+        if ("pending-tasks".equals(contentType)) {
+            taskFilter = "pending";
+        } else if ("completed-tasks".equals(contentType)) {
+            taskFilter = "completed";
+        } else {
+            taskFilter = "all";
+        }
+        request.setAttribute("taskFilter", taskFilter);
+
         String includePath;
         if ("view".equals(action) && taskIdStr != null && !taskIdStr.isEmpty()) {
             try {
@@ -74,16 +85,21 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                 if (task == null || task.getAssignByTeamLeaderId() != teamLeaderId) {
                     request.setAttribute("errorMessage", "Task not found or not assigned to you.");
                     if ("pending-tasks".equals(contentType)) {
-                        request.setAttribute("pendingTasks", taskDAO.getTasksByStatus(teamLeaderId, "Pending"));
-                        includePath = "pending-tasks.jsp";
+                        List<Task> pendingTasks = taskDAO.getTasksByStatus(teamLeaderId, "Pending");
+                        request.setAttribute("pendingTasks", pendingTasks);
+                        LOGGER.info("Pending tasks size: " + (pendingTasks != null ? pendingTasks.size() : "null"));
+                        includePath = "tasks.jsp";
                     } else if ("completed-tasks".equals(contentType)) {
-                        request.setAttribute("completedTasks", taskDAO.getTasksByStatus(teamLeaderId, "Completed"));
-                        includePath = "completed-tasks.jsp";
+                        List<Task> completedTasks = taskDAO.getTasksByStatus(teamLeaderId, "Completed");
+                        request.setAttribute("completedTasks", completedTasks);
+                        LOGGER.info("Completed tasks size: " + (completedTasks != null ? completedTasks.size() : "null"));
+                        includePath = "tasks.jsp";
                     } else {
                         List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
                         List<Project> projects = projectDAO.getProjects(teamLeaderId);
                         request.setAttribute("tasks", tasks);
                         request.setAttribute("projects", projects);
+                        LOGGER.info("All tasks size: " + (tasks != null ? tasks.size() : "null"));
                         includePath = "tasks.jsp";
                     }
                     request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
@@ -100,7 +116,6 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                     teamLeader.setName(employeeDAO.getTeamLeaderNameById(task.getAssignByTeamLeaderId()));
                 }
                 if (task.getAssignedToEmployeeId() != null) {
-                    // Handle Optional<Employee> case
                     Object employeeResult = employeeDAO.getEmployeeById(task.getAssignedToEmployeeId());
                     if (employeeResult instanceof Optional) {
                         Optional<Employee> optionalEmployee = (Optional<Employee>) employeeResult;
@@ -115,40 +130,48 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                 request.setAttribute("teamLeader", teamLeader);
                 request.setAttribute("employee", employee);
                 request.setAttribute("action", "view");
-                includePath = contentType + ".jsp"; // Use the same JSP
-                LOGGER.info("Viewing task ID: " + taskId + " for contentType: " + contentType);
+                includePath = "tasks.jsp";
+                LOGGER.info("Viewing task ID: " + taskId + " for contentType: " + contentType + ", taskFilter: " + taskFilter);
             } catch (NumberFormatException e) {
                 request.setAttribute("errorMessage", "Invalid task ID.");
                 if ("pending-tasks".equals(contentType)) {
-                    request.setAttribute("pendingTasks", taskDAO.getTasksByStatus(teamLeaderId, "Pending"));
-                    includePath = "pending-tasks.jsp";
+                    List<Task> pendingTasks = taskDAO.getTasksByStatus(teamLeaderId, "Pending");
+                    request.setAttribute("pendingTasks", pendingTasks);
+                    LOGGER.info("Pending tasks size (error case): " + (pendingTasks != null ? pendingTasks.size() : "null"));
+                    includePath = "tasks.jsp";
                 } else if ("completed-tasks".equals(contentType)) {
-                    request.setAttribute("completedTasks", taskDAO.getTasksByStatus(teamLeaderId, "Completed"));
-                    includePath = "completed-tasks.jsp";
+                    List<Task> completedTasks = taskDAO.getTasksByStatus(teamLeaderId, "Completed");
+                    request.setAttribute("completedTasks", completedTasks);
+                    LOGGER.info("Completed tasks size (error case): " + (completedTasks != null ? completedTasks.size() : "null"));
+                    includePath = "tasks.jsp";
                 } else {
                     List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
                     List<Project> projects = projectDAO.getProjects(teamLeaderId);
                     request.setAttribute("tasks", tasks);
                     request.setAttribute("projects", projects);
+                    LOGGER.info("All tasks size (error case): " + (tasks != null ? tasks.size() : "null"));
                     includePath = "tasks.jsp";
                 }
             }
-        } else if ("tasks".equals(contentType)) {
-            List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
-            List<Project> projects = projectDAO.getProjects(teamLeaderId);
-            List<Employee> teamMembers = employeeDAO.getTeamMembers(displayName);
-            request.setAttribute("tasks", tasks);
-            request.setAttribute("projects", projects);
-            request.setAttribute("teamMembers", teamMembers);
+        } else if ("tasks".equals(contentType) || "pending-tasks".equals(contentType) || "completed-tasks".equals(contentType)) {
+            if ("pending-tasks".equals(contentType)) {
+                List<Task> pendingTasks = taskDAO.getTasksByStatus(teamLeaderId, "Pending");
+                request.setAttribute("pendingTasks", pendingTasks);
+                LOGGER.info("Pending tasks size: " + (pendingTasks != null ? pendingTasks.size() : "null"));
+            } else if ("completed-tasks".equals(contentType)) {
+                List<Task> completedTasks = taskDAO.getTasksByStatus(teamLeaderId, "Completed");
+                request.setAttribute("completedTasks", completedTasks);
+                LOGGER.info("Completed tasks size: " + (completedTasks != null ? completedTasks.size() : "null"));
+            } else {
+                List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
+                List<Project> projects = projectDAO.getProjects(teamLeaderId);
+                List<Employee> teamMembers = employeeDAO.getTeamMembers(displayName);
+                request.setAttribute("tasks", tasks);
+                request.setAttribute("projects", projects);
+                request.setAttribute("teamMembers", teamMembers);
+                LOGGER.info("All tasks size: " + (tasks != null ? tasks.size() : "null"));
+            }
             includePath = "tasks.jsp";
-        } else if ("pending-tasks".equals(contentType)) {
-            List<Task> pendingTasks = taskDAO.getTasksByStatus(teamLeaderId, "Pending");
-            request.setAttribute("pendingTasks", pendingTasks);
-            includePath = "pending-tasks.jsp";
-        } else if ("completed-tasks".equals(contentType)) {
-            List<Task> completedTasks = taskDAO.getTasksByStatus(teamLeaderId, "Completed");
-            request.setAttribute("completedTasks", completedTasks);
-            includePath = "completed-tasks.jsp";
         } else if ("create-task".equals(contentType)) {
             List<Project> projects = projectDAO.getProjects(teamLeaderId);
             request.setAttribute("projects", projects);
@@ -219,10 +242,11 @@ public class TeamLeaderTaskServlet extends HttpServlet {
             List<Project> projects = projectDAO.getProjects(teamLeaderId);
             request.setAttribute("tasks", tasks);
             request.setAttribute("projects", projects);
-            includePath = "tasks.jsp"; // Default
+            LOGGER.info("All tasks size (default): " + (tasks != null ? tasks.size() : "null"));
+            includePath = "tasks.jsp";
         }
 
-        LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", contentType: " + contentType);
+        LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", contentType: " + contentType + ", taskFilter: " + taskFilter);
         request.setAttribute("includePath", includePath);
         request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
     }
@@ -251,6 +275,16 @@ public class TeamLeaderTaskServlet extends HttpServlet {
         request.setAttribute("stats", stats);
 
         String action = request.getParameter("action");
+        String contentType = request.getParameter("contentType") != null ? request.getParameter("contentType") : "tasks";
+        String taskFilter = "all";
+        if ("pending-tasks".equals(contentType)) {
+            taskFilter = "pending";
+        } else if ("completed-tasks".equals(contentType)) {
+            taskFilter = "completed";
+        }
+        request.setAttribute("taskFilter", taskFilter);
+        request.setAttribute("contentType", contentType);
+
         String includePath = "tasks.jsp"; // Default includePath
 
         if ("createTask".equals(action)) {
@@ -309,7 +343,7 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                 List<Task> tasks = taskDAO.getTasksByTeamLeader(teamLeaderId);
                 request.setAttribute("tasks", tasks);
                 request.setAttribute("projects", projects);
-                includePath = "tasks.jsp";
+                LOGGER.info("Tasks size after create: " + (tasks != null ? tasks.size() : "null"));
             } catch (IllegalArgumentException e) {
                 request.setAttribute("errorMessage", e.getMessage());
                 request.setAttribute("projects", projectDAO.getProjects(teamLeaderId));
@@ -363,7 +397,7 @@ public class TeamLeaderTaskServlet extends HttpServlet {
             }
         }
 
-        LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", action: " + action);
+        LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath + ", action: " + action + ", taskFilter: " + taskFilter);
         request.setAttribute("includePath", includePath);
         request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
     }
