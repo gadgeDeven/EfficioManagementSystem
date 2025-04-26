@@ -7,7 +7,6 @@ import in.efficio.model.DashboardStats;
 import in.efficio.model.Employee;
 import in.efficio.model.Project;
 import in.efficio.model.Task;
-import in.efficio.model.TeamLeader;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 @WebServlet("/TeamLeaderTaskServlet")
 public class TeamLeaderTaskServlet extends HttpServlet {
@@ -108,13 +110,7 @@ public class TeamLeaderTaskServlet extends HttpServlet {
 
                 // Fetch additional details
                 Project project = projectDAO.getProjectById(task.getProjectId());
-                TeamLeader teamLeader = null;
                 Employee employee = null;
-                if (task.getAssignByTeamLeaderId() != 0) {
-                    teamLeader = new TeamLeader();
-                    teamLeader.setTeamleader_id(task.getAssignByTeamLeaderId());
-                    teamLeader.setName(employeeDAO.getTeamLeaderNameById(task.getAssignByTeamLeaderId()));
-                }
                 if (task.getAssignedToEmployeeId() != null) {
                     Object employeeResult = employeeDAO.getEmployeeById(task.getAssignedToEmployeeId());
                     if (employeeResult instanceof Optional) {
@@ -127,7 +123,6 @@ public class TeamLeaderTaskServlet extends HttpServlet {
 
                 request.setAttribute("taskDetails", task);
                 request.setAttribute("project", project);
-                request.setAttribute("teamLeader", teamLeader);
                 request.setAttribute("employee", employee);
                 request.setAttribute("action", "view");
                 includePath = "tasks.jsp";
@@ -152,6 +147,75 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                     LOGGER.info("All tasks size (error case): " + (tasks != null ? tasks.size() : "null"));
                     includePath = "tasks.jsp";
                 }
+            }
+        } else if ("edit".equals(action) && taskIdStr != null && !taskIdStr.isEmpty()) {
+            try {
+                int taskId = Integer.parseInt(taskIdStr);
+                Task task = taskDAO.getTaskById(taskId);
+                if (task == null || task.getAssignByTeamLeaderId() != teamLeaderId) {
+                    request.setAttribute("errorMessage", "Task not found or not assigned to you.");
+                    includePath = "tasks.jsp";
+                } else {
+                    request.setAttribute("taskDetails", task);
+                    request.setAttribute("action", "edit");
+                    includePath = "tasks.jsp";
+                    LOGGER.info("Editing task ID: " + taskId + " for contentType: " + contentType + ", taskFilter: " + taskFilter);
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid task ID.");
+                includePath = "tasks.jsp";
+            }
+        } else if ("download".equals(action) && taskIdStr != null && !taskIdStr.isEmpty()) {
+            try {
+                int taskId = Integer.parseInt(taskIdStr);
+                Task task = taskDAO.getTaskById(taskId);
+                if (task == null || task.getAssignByTeamLeaderId() != teamLeaderId) {
+                    request.setAttribute("errorMessage", "Task not found or not assigned to you.");
+                    includePath = "tasks.jsp";
+                    request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
+                    return;
+                }
+
+                Project project = projectDAO.getProjectById(task.getProjectId());
+                Employee employee = null;
+                if (task.getAssignedToEmployeeId() != null) {
+                    Object employeeResult = employeeDAO.getEmployeeById(task.getAssignedToEmployeeId());
+                    if (employeeResult instanceof Optional) {
+                        Optional<Employee> optionalEmployee = (Optional<Employee>) employeeResult;
+                        employee = optionalEmployee.orElse(null);
+                    } else {
+                        employee = (Employee) employeeResult;
+                    }
+                }
+
+                response.setContentType("application/pdf");
+                response.setHeader("Content-Disposition", "attachment; filename=Task_" + taskId + "_Report.pdf");
+
+                Document document = new Document();
+                try {
+                    PdfWriter.getInstance(document, response.getOutputStream());
+                    document.open();
+                    document.add(new Paragraph("Task Report: " + task.getTaskTitle()));
+                    document.add(new Paragraph(" "));
+                    document.add(new Paragraph("Details:"));
+                    document.add(new Paragraph("  Title: " + (task.getTaskTitle() != null ? task.getTaskTitle() : "N/A")));
+                    document.add(new Paragraph("  Description: " + (task.getDescription() != null ? task.getDescription() : "N/A")));
+                    document.add(new Paragraph("  Project: " + (project != null && project.getProjectName() != null ? project.getProjectName() : "N/A")));
+                    document.add(new Paragraph("  Deadline: " + (task.getDeadlineDate() != null ? task.getDeadlineDate().toString() : "N/A")));
+                    document.add(new Paragraph("  Status: " + (task.getStatus() != null ? task.getStatus() : "N/A")));
+                    document.add(new Paragraph("  Progress: " + task.getProgressPercentage() + "%"));
+                    document.add(new Paragraph(" "));
+                    document.add(new Paragraph("Assigned Employee:"));
+                    document.add(new Paragraph("  - " + (employee != null && employee.getName() != null ? employee.getName() : "None")));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    document.close();
+                }
+                return;
+            } catch (NumberFormatException e) {
+                request.setAttribute("errorMessage", "Invalid task ID.");
+                includePath = "tasks.jsp";
             }
         } else if ("tasks".equals(contentType) || "pending-tasks".equals(contentType) || "completed-tasks".equals(contentType)) {
             if ("pending-tasks".equals(contentType)) {
@@ -285,7 +349,7 @@ public class TeamLeaderTaskServlet extends HttpServlet {
         request.setAttribute("taskFilter", taskFilter);
         request.setAttribute("contentType", contentType);
 
-        String includePath = "tasks.jsp"; // Default includePath
+        String includePath = "tasks.jsp";
 
         if ("createTask".equals(action)) {
             try {
@@ -394,6 +458,54 @@ public class TeamLeaderTaskServlet extends HttpServlet {
                 List<Project> projects = projectDAO.getProjects(teamLeaderId);
                 request.setAttribute("projects", projects);
                 includePath = "assign-task.jsp";
+            }
+        } else if ("updateTask".equals(action)) {
+            try {
+                String taskIdStr = request.getParameter("taskId");
+                String taskTitle = request.getParameter("taskTitle");
+                String description = request.getParameter("description");
+                String deadlineDateStr = request.getParameter("deadlineDate");
+                String contentTypeParam = request.getParameter("contentType");
+                String taskFilterParam = request.getParameter("taskFilter");
+
+                if (taskTitle == null || taskTitle.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Task title is required.");
+                }
+                if (description == null || description.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Description is required.");
+                }
+                if (deadlineDateStr == null || deadlineDateStr.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Deadline date is required.");
+                }
+
+                int taskId = Integer.parseInt(taskIdStr);
+                Task task = taskDAO.getTaskById(taskId);
+                if (task == null || task.getAssignByTeamLeaderId() != teamLeaderId) {
+                    throw new IllegalArgumentException("Task not found or not assigned to you.");
+                }
+
+                task.setTaskTitle(taskTitle);
+                task.setDescription(description);
+                try {
+                    task.setDeadlineDate(Date.valueOf(deadlineDateStr));
+                } catch (IllegalArgumentException e) {
+                    throw new IllegalArgumentException("Invalid deadline date format.");
+                }
+
+                taskDAO.updateTask(task);
+                session.setAttribute("successMessage", "Task updated successfully!");
+                response.sendRedirect(request.getContextPath() + "/TeamLeaderTaskServlet?contentType=" + contentTypeParam + "&taskFilter=" + taskFilterParam + "&action=view&taskId=" + taskId);
+                return;
+            } catch (IllegalArgumentException e) {
+                request.setAttribute("errorMessage", e.getMessage());
+                Task task = taskDAO.getTaskById(Integer.parseInt(request.getParameter("taskId")));
+                request.setAttribute("taskDetails", task);
+                request.setAttribute("action", "edit");
+            } catch (Exception e) {
+                request.setAttribute("errorMessage", "Unexpected error updating task: " + e.getMessage());
+                Task task = taskDAO.getTaskById(Integer.parseInt(request.getParameter("taskId")));
+                request.setAttribute("taskDetails", task);
+                request.setAttribute("action", "edit");
             }
         }
 

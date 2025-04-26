@@ -278,4 +278,64 @@ public class TaskDAO {
         }
         return null;
     }
+
+    public void updateTask(Task task) {
+        String query = "UPDATE task SET task_title = ?, description = ?, deadline_date = ? WHERE task_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, task.getTaskTitle());
+            ps.setString(2, task.getDescription());
+            ps.setDate(3, task.getDeadlineDate());
+            ps.setInt(4, task.getTaskId());
+            int rowsAffected = ps.executeUpdate();
+            LOGGER.info("Task updated, ID: " + task.getTaskId() + ", rows affected: " + rowsAffected);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating task ID: " + task.getTaskId(), e);
+            throw new RuntimeException("Failed to update task: " + e.getMessage(), e);
+        }
+    }
+
+    public void deleteTask(int taskId) {
+        Connection con = null;
+        try {
+            con = DbConnection.getConnection();
+            con.setAutoCommit(false); // Start transaction
+
+            // Delete related records from works_on
+            String deleteWorksOnQuery = "DELETE FROM works_on WHERE task_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(deleteWorksOnQuery)) {
+                ps.setInt(1, taskId);
+                ps.executeUpdate();
+            }
+
+            // Delete the task from task table
+            String deleteTaskQuery = "DELETE FROM task WHERE task_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(deleteTaskQuery)) {
+                ps.setInt(1, taskId);
+                ps.executeUpdate();
+            }
+
+            con.commit(); // Commit transaction
+            LOGGER.info("Task deleted, ID: " + taskId);
+        } catch (SQLException e) {
+            if (con != null) {
+                try {
+                    con.rollback(); // Rollback on error
+                } catch (SQLException rollbackEx) {
+                    LOGGER.log(Level.SEVERE, "Rollback failed for task deletion: " + taskId, rollbackEx);
+                }
+            }
+            LOGGER.log(Level.SEVERE, "Error deleting task ID: " + taskId, e);
+            throw new RuntimeException("Failed to delete task: " + e.getMessage(), e);
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    con.close();
+                } catch (SQLException closeEx) {
+                    LOGGER.log(Level.SEVERE, "Failed to close connection after task deletion: " + taskId, closeEx);
+                }
+            }
+        }
+    }
 }
