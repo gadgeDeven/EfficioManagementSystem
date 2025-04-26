@@ -11,6 +11,17 @@
         stats = new DashboardStats(); // Initialize with default values
     }
 %>
+<style>
+.stat-box button {
+    background: #670bf5;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+</style>
+
 <h1><i class="fas fa-handshake"></i> Welcome, <%=displayName%>!</h1>
 <div class="stats-container">
     <div class="stat-box">
@@ -18,7 +29,7 @@
         <p><i class="fas fa-project-diagram"></i> My Projects</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderProjectServlet" method="get">
             <input type="hidden" name="contentType" value="projects">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -26,7 +37,7 @@
         <p><i class="fas fa-hourglass-half"></i> Pending Projects</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderProjectServlet" method="get">
             <input type="hidden" name="contentType" value="pending-projects">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -34,7 +45,7 @@
         <p><i class="fas fa-check-circle"></i> Completed Projects</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderProjectServlet" method="get">
             <input type="hidden" name="contentType" value="completed-projects">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -42,7 +53,7 @@
         <p><i class="fas fa-tasks"></i> Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="tasks">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -50,7 +61,7 @@
         <p><i class="fas fa-hourglass-half"></i> Pending Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="pending-tasks">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -58,7 +69,7 @@
         <p><i class="fas fa-check-circle"></i> Completed Tasks</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
             <input type="hidden" name="contentType" value="completed-tasks">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
     <div class="stat-box">
@@ -66,7 +77,7 @@
         <p><i class="fas fa-chart-line"></i> Productivity</p>
         <form action="${pageContext.request.contextPath}/TeamLeaderDashboard" method="get">
             <input type="hidden" name="contentType" value="productivity">
-            <button type="submit" class="show-btn">View</button>
+            <button type="submit" class="show-btn">Show Information</button>
         </form>
     </div>
 </div>
