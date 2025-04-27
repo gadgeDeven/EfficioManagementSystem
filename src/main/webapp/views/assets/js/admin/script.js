@@ -9,23 +9,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const pageTitle = document.getElementById('pageTitle');
     const dashboardInner = document.getElementById('dashboardInner');
 
-    // Mapping of contentType to title and icon
+    // Debug: Check if elements are found
+    console.log('notificationBell:', notificationBell);
+    console.log('notificationPanel:', notificationPanel);
+    console.log('closeNotification:', closeNotification);
+
+    // Mapping of contentType to title and icon for Team Leader Dashboard
     const contentTypeMap = {
         'welcome': { title: 'Dashboard', icon: 'fas fa-tachometer-alt' },
-        'view-employees': { title: 'View Employees', icon: 'fas fa-users' },
-        'employee-profile': { title: 'Employee Profile', icon: 'fas fa-users' },
-        'view-teamleaders': { title: 'View Team Leaders', icon: 'fas fa-user-tie' },
-        'teamleader-profile': { title: 'Team Leader Profile', icon: 'fas fa-user-tie' },
-        'create-projects': { title: 'Create Projects', icon: 'fas fa-folder-plus' },
-        'view-projects': { title: 'View Projects', icon: 'fas fa-eye' },
-        'assign-team-leaders': { title: 'Assign Team Leaders', icon: 'fas fa-user-tie' },
-        'project-team-leaders': { title: 'Project Team Leaders', icon: 'fas fa-project-diagram' },
-        'adminsList': { title: 'Admins List', icon: 'fas fa-user-shield' },
-        'projectsList': { title: 'All Projects', icon: 'fas fa-project-diagram' },
-        'pendingList': { title: 'Pending Projects', icon: 'fas fa-tasks' },
-        'completedList': { title: 'Completed Projects', icon: 'fas fa-check-circle' },
-        'productivityList': { title: 'Productivity', icon: 'fas fa-chart-line' },
-        'notifications': { title: 'Pending Requests', icon: 'fas fa-bell' }
+        'projects': { title: 'Projects', icon: 'fas fa-project-diagram' },
+        'pending-projects': { title: 'Pending Projects', icon: 'fas fa-project-diagram' },
+        'completed-projects': { title: 'Completed Projects', icon: 'fas fa-project-diagram' },
+        'tasks': { title: 'Tasks', icon: 'fas fa-tasks' },
+        'pending-tasks': { title: 'Pending Tasks', icon: 'fas fa-tasks' },
+        'completed-tasks': { title: 'Completed Tasks', icon: 'fas fa-tasks' },
+        'create-task': { title: 'Create Task', icon: 'fas fa-plus-circle' },
+        'assign-task': { title: 'Assign Task', icon: 'fas fa-user-check' },
+        'assign-projects': { title: 'Assign Projects', icon: 'fas fa-user-plus' },
+        'team-members': { title: 'Team Members', icon: 'fas fa-users' },
+        'notifications': { title: 'Notifications', icon: 'fas fa-bell' },
+        'project-details': { title: 'Project Details', icon: 'fas fa-project-diagram' },
+        'employee-details': { title: 'Employee Details', icon: 'fas fa-user' },
+        'task-details': { title: 'Task Details', icon: 'fas fa-tasks' },
+        'edit-task': { title: 'Edit Task', icon: 'fas fa-edit' },
+        'tasks-by-project': { title: 'Tasks by Project', icon: 'fas fa-tasks' },
+        'profile': { title: 'Profile', icon: 'fas fa-user' },
+        'settings': { title: 'Settings', icon: 'fas fa-cog' }
     };
 
     // Function to update page title based on contentType
@@ -37,6 +46,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize page title based on current contentType
     updatePageTitle(currentContentType);
 
+    // Initialize notification panel as hidden
+    if (notificationPanel) {
+        notificationPanel.style.display = 'none';
+        notificationPanel.classList.remove('active');
+    } else {
+        console.error('notificationPanel not found');
+    }
+
+    // Sidebar toggle
     if (toggleSidebar) {
         toggleSidebar.addEventListener('click', function(e) {
             e.preventDefault();
@@ -50,13 +68,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    if (notificationBell && notificationPanel && closeNotification) {
+    // Notification panel toggle
+    if (notificationBell && notificationPanel) {
         notificationBell.addEventListener('click', function(e) {
             e.preventDefault();
+            console.log('Notification bell clicked');
             const isVisible = notificationPanel.style.display === 'block';
             if (!isVisible) {
                 dashboardInner.style.display = 'none';
                 notificationPanel.style.display = 'block';
+                notificationPanel.classList.add('active');
                 updatePageTitle('notifications');
                 fetch(contextPath + '/MarkAsSeenServlet')
                     .then(() => {
@@ -65,34 +86,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => console.error('Error marking as seen:', error));
             } else {
                 notificationPanel.style.display = 'none';
+                notificationPanel.classList.remove('active');
                 dashboardInner.style.display = 'block';
-                updatePageTitle(currentContentType); // Restore original title
+                updatePageTitle(currentContentType);
             }
         });
+    } else {
+        console.error('notificationBell or notificationPanel missing');
+    }
 
+    // Close notification panel
+    if (closeNotification) {
         closeNotification.addEventListener('click', function() {
+            console.log('Close notification clicked');
             notificationPanel.style.display = 'none';
+            notificationPanel.classList.remove('active');
             dashboardInner.style.display = 'block';
-            updatePageTitle(currentContentType); // Restore original title
+            updatePageTitle(currentContentType);
         });
+    } else {
+        console.warn('closeNotification not found');
+    }
 
+    // Close panel on outside click
+    if (notificationPanel) {
         document.addEventListener('click', function(e) {
-            // Only handle clicks outside notification panel and bell
             if (!notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
                 if (notificationPanel.style.display === 'block') {
+                    console.log('Outside click, closing panel');
                     notificationPanel.style.display = 'none';
+                    notificationPanel.classList.remove('active');
                     dashboardInner.style.display = 'block';
-                    updatePageTitle(currentContentType); // Restore original title
+                    updatePageTitle(currentContentType);
                 }
-            }
-            // Prevent resetting title for clicks on main content or empty areas
-            if (e.target === document.body || e.target === document.querySelector('.main-content') || e.target === dashboardInner) {
-                e.preventDefault();
-                // Do nothing to preserve current title
             }
         });
     }
 
+    // Profile dropdown toggle
     if (profileIcon && profileDropdown) {
         profileIcon.addEventListener('click', function(e) {
             e.stopPropagation();

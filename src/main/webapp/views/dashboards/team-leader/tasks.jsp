@@ -22,9 +22,7 @@
         // Debug output
         List<Task> pendingTasks = (List<Task>) request.getAttribute("pendingTasks");
         List<Task> completedTasks = (List<Task>) request.getAttribute("completedTasks");
-        System.out.println("tasks.jsp: contentType = " + contentType + ", taskFilter = " + taskFilter +
-                          ", pendingTasks size = " + (pendingTasks != null ? pendingTasks.size() : "null") +
-                          ", completedTasks size = " + (completedTasks != null ? completedTasks.size() : "null"));
+        
 
         // Determine task list based on taskFilter
         List<Task> tasks = null;

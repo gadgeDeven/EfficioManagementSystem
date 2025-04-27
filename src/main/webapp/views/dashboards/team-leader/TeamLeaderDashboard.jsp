@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Team Leader Dashboard</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/teamleader/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/style.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/views/assets/images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +37,6 @@
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderDashboard?contentType=welcome" <%= "welcome".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderProjectServlet?contentType=projects" <%= "projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-project-diagram"></i> <span>Projects</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=tasks&taskFilter=all" <%= "tasks".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tasks"></i> <span>Tasks</span></a></li>
-
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=create-task" <%= "create-task".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-plus-circle"></i> <span>Create Task</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=assign-task" <%= "assign-task".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-check"></i> <span>Assign Task</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/TeamLeaderAssignmentServlet?contentType=assign-projects" <%= "assign-projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user-plus"></i> <span>Assign Projects</span></a></li>
@@ -85,7 +84,7 @@
                 </h2>
                 <div class="icons">
                     <div class="notification">
-                        <a href="#" id="notificationBell">
+                        <a href="javascript:void(0)" id="notificationBell">
                             <i class="fas fa-bell"></i>
                             <% 
                                 List<Task> adminTasks = (List<Task>) request.getAttribute("adminTasks");
@@ -123,6 +122,10 @@
         </main>
     </div>
 
-    <script src="${pageContext.request.contextPath}/views/assets/js/team-leader/teamleader-dashboard.js"></script>
+    <script>
+        const contextPath = '<%=request.getContextPath()%>';
+        const currentContentType = '<%=contentType%>';
+    </script>
+    <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
 </body>
 </html>
