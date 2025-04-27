@@ -16,9 +16,9 @@ public class TaskDAO {
         this.conn = DbConnection.getConnection();
     }
 
-    // Insert a new task
+    // Existing methods (unchanged)
     public boolean createTask(Task task, int teamLeaderId) {
-        String query = "INSERT INTO task (task_title, description, project_id, deadline_date, status, progress_percentage, assign_by_teamleader_id, assigned_to_employee_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO task (task_title, description, project_id, deadline_date, status, progress_percentage, assign_by_teamleader_id, assigned_to_employee_id, is_seen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, task.getTaskTitle());
@@ -27,8 +27,9 @@ public class TaskDAO {
             ps.setDate(4, task.getDeadlineDate());
             ps.setString(5, task.getStatus());
             ps.setInt(6, task.getProgressPercentage());
-            ps.setInt(7, teamLeaderId); // Set team leader who assigns the task
-            ps.setNull(8, java.sql.Types.INTEGER); // No employee assigned initially
+            ps.setInt(7, teamLeaderId);
+            ps.setNull(8, java.sql.Types.INTEGER);
+            ps.setBoolean(9, false); // New tasks are unseen
             int rowsAffected = ps.executeUpdate();
             System.out.println("Task inserted, rows affected: " + rowsAffected);
             return rowsAffected > 0;
@@ -39,14 +40,13 @@ public class TaskDAO {
     }
 
     public void assignTaskToEmployee(int taskId, int employeeId, int projectId, int teamLeaderId) {
-        String taskQuery = "UPDATE task SET assigned_to_employee_id = ? WHERE task_id = ?";
+        String taskQuery = "UPDATE task SET assigned_to_employee_id = ?, is_seen = FALSE WHERE task_id = ?";
         String worksOnQuery = "UPDATE works_on SET task_id = ? WHERE project_id = ? AND teamleader_id = ? AND employee_id = ?";
         Connection con = null;
         try {
             con = DbConnection.getConnection();
             con.setAutoCommit(false);
 
-            // Update task
             try (PreparedStatement taskPs = con.prepareStatement(taskQuery)) {
                 taskPs.setInt(1, employeeId);
                 taskPs.setInt(2, taskId);
@@ -56,7 +56,6 @@ public class TaskDAO {
                 }
             }
 
-            // Update works_on
             try (PreparedStatement worksOnPs = con.prepareStatement(worksOnQuery)) {
                 worksOnPs.setInt(1, taskId);
                 worksOnPs.setInt(2, projectId);
@@ -95,9 +94,8 @@ public class TaskDAO {
     public List<Task> getTasksByTeamLeader(int teamLeaderId) {
         List<Task> tasks = new ArrayList<>();
         String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
-                      "t.assign_by_teamleader_id, t.assigned_to_employee_id " +
-                      "FROM task t " +
-                      "WHERE t.assign_by_teamleader_id = ?";
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen " +
+                      "FROM task t WHERE t.assign_by_teamleader_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, teamLeaderId);
@@ -113,9 +111,9 @@ public class TaskDAO {
                 task.setProgressPercentage(rs.getInt("progress_percentage"));
                 task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
                 task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
                 tasks.add(task);
             }
-            System.out.println("Tasks fetched for teamLeaderId " + teamLeaderId + ": " + tasks.size());
         } catch (SQLException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, "Error fetching tasks for team leader: " + teamLeaderId, e);
@@ -130,9 +128,7 @@ public class TaskDAO {
             ps.setInt(1, teamLeaderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int count = rs.getInt(1);
-                System.out.println("Task count for teamLeaderId " + teamLeaderId + ": " + count);
-                return count;
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -140,7 +136,7 @@ public class TaskDAO {
         }
         return 0;
     }
-    
+
     public int getPendingTaskCount(int teamLeaderId) {
         String query = "SELECT COUNT(*) FROM task t WHERE t.assign_by_teamleader_id = ? AND t.status = 'Pending'";
         try (Connection con = DbConnection.getConnection();
@@ -148,9 +144,7 @@ public class TaskDAO {
             ps.setInt(1, teamLeaderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int count = rs.getInt(1);
-                System.out.println("Pending task count for teamLeaderId " + teamLeaderId + ": " + count);
-                return count;
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -166,9 +160,7 @@ public class TaskDAO {
             ps.setInt(1, teamLeaderId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                int count = rs.getInt(1);
-                System.out.println("Completed task count for teamLeaderId " + teamLeaderId + ": " + count);
-                return count;
+                return rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -177,11 +169,10 @@ public class TaskDAO {
         return 0;
     }
 
-    // Fetch tasks by status for a team leader
     public List<Task> getTasksByStatus(int teamLeaderId, String status) {
         List<Task> tasks = new ArrayList<>();
         String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
-                      "t.assign_by_teamleader_id, t.assigned_to_employee_id " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen " +
                       "FROM task t WHERE t.assign_by_teamleader_id = ? AND t.status = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -199,19 +190,19 @@ public class TaskDAO {
                 task.setProgressPercentage(rs.getInt("progress_percentage"));
                 task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
                 task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
                 tasks.add(task);
             }
-            System.out.println("Fetched " + status + " tasks for teamLeaderId " + teamLeaderId + ": " + tasks.size());
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching " + status + " tasks for team leader: " + teamLeaderId, e);
         }
         return tasks;
     }
-    
+
     public List<Task> getTasksByProject(int projectId, int teamLeaderId) {
         List<Task> tasks = new ArrayList<>();
         String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
-                      "t.assign_by_teamleader_id, t.assigned_to_employee_id " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen " +
                       "FROM task t WHERE t.project_id = ? AND t.assign_by_teamleader_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -229,24 +220,23 @@ public class TaskDAO {
                 task.setProgressPercentage(rs.getInt("progress_percentage"));
                 task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
                 task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
                 tasks.add(task);
             }
-            System.out.println("Tasks fetched for projectId " + projectId + ", teamLeaderId " + teamLeaderId + ": " + tasks.size());
         } catch (SQLException e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, "Error fetching tasks for projectId: " + projectId + ", teamLeaderId: " + teamLeaderId, e);
         }
         return tasks;
     }
-    
+
     public void assignTask(int taskId, int employeeId) {
-        String query = "UPDATE task SET assigned_to_employee_id = ? WHERE task_id = ?";
+        String query = "UPDATE task SET assigned_to_employee_id = ?, is_seen = FALSE WHERE task_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, employeeId);
             ps.setInt(2, taskId);
-            int rows = ps.executeUpdate();
-            System.out.println("Assigned task " + taskId + " to employee " + employeeId + ": " + rows + " rows affected");
+            ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error assigning task " + taskId + " to employee " + employeeId, e);
         }
@@ -254,7 +244,7 @@ public class TaskDAO {
 
     public Task getTaskById(int taskId) {
         String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, " +
-                      "t.progress_percentage, t.assign_by_teamleader_id, t.assigned_to_employee_id " +
+                      "t.progress_percentage, t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen " +
                       "FROM task t WHERE t.task_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -271,6 +261,7 @@ public class TaskDAO {
                 task.setProgressPercentage(rs.getInt("progress_percentage"));
                 task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
                 task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
                 return task;
             }
         } catch (SQLException e) {
@@ -280,18 +271,18 @@ public class TaskDAO {
     }
 
     public void updateTask(Task task) {
-        String query = "UPDATE task SET task_title = ?, description = ?, deadline_date = ? WHERE task_id = ?";
+        String query = "UPDATE task SET task_title = ?, description = ?, deadline_date = ?, status = ?, progress_percentage = ?, is_seen = FALSE WHERE task_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, task.getTaskTitle());
             ps.setString(2, task.getDescription());
             ps.setDate(3, task.getDeadlineDate());
-            ps.setInt(4, task.getTaskId());
-            int rowsAffected = ps.executeUpdate();
-            LOGGER.info("Task updated, ID: " + task.getTaskId() + ", rows affected: " + rowsAffected);
+            ps.setString(4, task.getStatus());
+            ps.setInt(5, task.getProgressPercentage());
+            ps.setInt(6, task.getTaskId());
+            ps.executeUpdate();
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating task ID: " + task.getTaskId(), e);
-            throw new RuntimeException("Failed to update task: " + e.getMessage(), e);
         }
     }
 
@@ -299,34 +290,30 @@ public class TaskDAO {
         Connection con = null;
         try {
             con = DbConnection.getConnection();
-            con.setAutoCommit(false); // Start transaction
+            con.setAutoCommit(false);
 
-            // Delete related records from works_on
             String deleteWorksOnQuery = "DELETE FROM works_on WHERE task_id = ?";
             try (PreparedStatement ps = con.prepareStatement(deleteWorksOnQuery)) {
                 ps.setInt(1, taskId);
                 ps.executeUpdate();
             }
 
-            // Delete the task from task table
             String deleteTaskQuery = "DELETE FROM task WHERE task_id = ?";
             try (PreparedStatement ps = con.prepareStatement(deleteTaskQuery)) {
                 ps.setInt(1, taskId);
                 ps.executeUpdate();
             }
 
-            con.commit(); // Commit transaction
-            LOGGER.info("Task deleted, ID: " + taskId);
+            con.commit();
         } catch (SQLException e) {
             if (con != null) {
                 try {
-                    con.rollback(); // Rollback on error
+                    con.rollback();
                 } catch (SQLException rollbackEx) {
                     LOGGER.log(Level.SEVERE, "Rollback failed for task deletion: " + taskId, rollbackEx);
                 }
             }
             LOGGER.log(Level.SEVERE, "Error deleting task ID: " + taskId, e);
-            throw new RuntimeException("Failed to delete task: " + e.getMessage(), e);
         } finally {
             if (con != null) {
                 try {
@@ -336,6 +323,64 @@ public class TaskDAO {
                     LOGGER.log(Level.SEVERE, "Failed to close connection after task deletion: " + taskId, closeEx);
                 }
             }
+        }
+    }
+
+    // New methods for Employee Dashboard
+    public List<Task> getTasksByEmployeeId(int employeeId) {
+        List<Task> tasks = new ArrayList<>();
+        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen, p.project_name " +
+                      "FROM task t LEFT JOIN project p ON t.project_id = p.project_id " +
+                      "WHERE t.assigned_to_employee_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Task task = new Task();
+                task.setTaskId(rs.getInt("task_id"));
+                task.setTaskTitle(rs.getString("task_title"));
+                task.setDescription(rs.getString("description"));
+                task.setProjectId(rs.getInt("project_id"));
+                task.setDeadlineDate(rs.getDate("deadline_date"));
+                task.setStatus(rs.getString("status"));
+                task.setProgressPercentage(rs.getInt("progress_percentage"));
+                task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
+                task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
+                task.setProjectName(rs.getString("project_name"));
+                tasks.add(task);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching tasks for employee: " + employeeId, e);
+        }
+        return tasks;
+    }
+
+    public int getUnseenTaskNotificationsCount(int employeeId) {
+        String query = "SELECT COUNT(*) FROM task WHERE assigned_to_employee_id = ? AND is_seen = FALSE";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting unseen task notifications for employee: " + employeeId, e);
+        }
+        return 0;
+    }
+
+    public void markTaskAsSeen(int taskId) {
+        String query = "UPDATE task SET is_seen = TRUE WHERE task_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, taskId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error marking task as seen: " + taskId, e);
         }
     }
 }

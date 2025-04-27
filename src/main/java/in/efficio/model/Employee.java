@@ -19,6 +19,9 @@ public class Employee {
     private List<Project> projects;
     private Set<Integer> teamLeaderIds;
     private List<Task> tasks;
+    private String mobileNumber;
+    public String getMobileNumber() { return mobileNumber; }
+    public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
     
     //Getter and Setters
 	public int getEmployee_id() {

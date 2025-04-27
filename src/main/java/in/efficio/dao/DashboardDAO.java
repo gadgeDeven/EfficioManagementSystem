@@ -42,4 +42,68 @@ public class DashboardDAO {
         }
         return stats;
     }
+    
+    public int getEmployeeProjectCount(int employeeId) {
+        String query = "SELECT COUNT(*) FROM works_on WHERE employee_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getEmployeeTaskCount(int employeeId) {
+        String query = "SELECT COUNT(*) FROM task WHERE assigned_to_employee_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+           
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getEmployeePendingTaskCount(int employeeId) {
+        String query = "SELECT COUNT(*) FROM task WHERE assigned_to_employee_id = ? AND status = 'Pending'";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+           
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int getEmployeeCompletedTaskCount(int employeeId) {
+        String query = "SELECT COUNT(*) FROM task WHERE assigned_to_employee_id = ? AND status = 'Completed'";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+           
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

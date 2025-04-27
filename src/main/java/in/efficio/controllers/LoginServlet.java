@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.logging.Logger;
 
 import in.efficio.dbconnection.DbConnection;
 import in.efficio.utils.PasswordHashing;
@@ -17,11 +18,12 @@ import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/LoginServlet")
 public class LoginServlet extends HttpServlet {
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    RequestDispatcher rd = request.getRequestDispatcher("views/auth/login.jsp");
-	    rd.forward(request, response);
-	}
+    private static final Logger LOGGER = Logger.getLogger(LoginServlet.class.getName());
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        RequestDispatcher rd = request.getRequestDispatcher("views/auth/login.jsp");
+        rd.forward(request, response);
+    }
     
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String role = request.getParameter("role");
@@ -49,7 +51,7 @@ public class LoginServlet extends HttpServlet {
             } else if (role.equalsIgnoreCase("TeamLeader")) {
                 query = "SELECT * FROM team_leader WHERE email=?";
             } else if (role.equalsIgnoreCase("Employee")) {
-                query = "SELECT * FROM employee WHERE email=?";
+                query = "SELECT employee_id, name, email, password, status FROM employee WHERE email=?";
             } else {
                 request.setAttribute("message", "Invalid Role Selected!");
                 request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
@@ -86,16 +88,29 @@ public class LoginServlet extends HttpServlet {
                 String hashedInputPassword = PasswordHashing.hashPassword(password);
                 if (dbPassword.equals(hashedInputPassword)) {
                     HttpSession session = request.getSession();
-                    session.setAttribute("userName", email); // Changed to email instead of name
+                    session.setAttribute("userName", email);
                     session.setAttribute("userRole", role);
-                    session.setAttribute("displayName", name); // Optional: store name separately for display
+                    session.setAttribute("displayName", name);
+                    
+                    if (role.equalsIgnoreCase("Employee")) {
+                        int employeeId = rs.getInt("employee_id");
+                        if (rs.wasNull()) {
+                            LOGGER.severe("employee_id is null for email: " + email);
+                            request.setAttribute("message", "Invalid account: Employee ID missing.");
+                            request.getRequestDispatcher("views/auth/login.jsp").forward(request, response);
+                            return;
+                        }
+                        session.setAttribute("userId", employeeId);
+                        session.setAttribute("employeeId", employeeId);
+                        LOGGER.info("Set employeeId: " + employeeId + " for user: " + email);
+                    }
 
                     if (role.equalsIgnoreCase("Admin")) {
                         response.sendRedirect(request.getContextPath() + "/DashboardServlet");
                     } else if (role.equalsIgnoreCase("TeamLeader")) {
-                        response.sendRedirect(request.getContextPath() + "/TeamLeaderDashboard"); // Fixed servlet name
+                        response.sendRedirect(request.getContextPath() + "/TeamLeaderDashboard");
                     } else if (role.equalsIgnoreCase("Employee")) {
-                        response.sendRedirect(request.getContextPath() + "/views/dashboards/employee/employee-dashboard.jsp");
+                        response.sendRedirect(request.getContextPath() + "/EmployeeDashboardServlet");
                     }
                 } else {
                     request.setAttribute("message", "Incorrect Password! Please try again.");

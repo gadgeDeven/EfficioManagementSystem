@@ -480,13 +480,14 @@ public class ProjectDAO {
  // In ProjectDAO.java
     public List<Project> getProjectsByEmployee(int employeeId) {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT p.project_id, p.project_name, p.description, p.start_date, p.end_date, p.status, p.priority " +
-                     "FROM projects p JOIN project_assignments pa ON p.project_id = pa.project_id " +
-                     "WHERE pa.employee_id = ?";
-        try (Connection conn = DbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, employeeId);
-            ResultSet rs = stmt.executeQuery();
+        String query = "SELECT p.project_id, p.project_name, p.description, p.start_date, p.end_date, p.status, p.priority, p.admin_id " +
+                      "FROM project p " +
+                      "JOIN works_on wo ON p.project_id = wo.project_id " +
+                      "WHERE wo.employee_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Project project = new Project();
                 project.setProjectId(rs.getInt("project_id"));
@@ -496,10 +497,11 @@ public class ProjectDAO {
                 project.setEndDate(rs.getDate("end_date"));
                 project.setStatus(rs.getString("status"));
                 project.setPriority(rs.getString("priority"));
+                project.setAdminId(rs.getInt("admin_id"));
                 projects.add(project);
             }
         } catch (SQLException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
         return projects;
     }
