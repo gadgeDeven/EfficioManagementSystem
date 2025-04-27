@@ -69,7 +69,9 @@
                     <% if (employees != null && !employees.isEmpty()) { %>
                         <% for (Employee emp : employees) { %>
                             <div class="proj-employee-item">
-                                <%= emp.getName() != null ? emp.getName() : "N/A" %>
+                                <a href="${pageContext.request.contextPath}/TeamLeaderTeamServlet?contentType=employee-details&action=view&employeeId=<%= emp.getEmployee_id() %>">
+                                    <%= emp.getName() != null ? emp.getName() : "N/A" %>
+                                </a>
                             </div>
                         <% } %>
                     <% } else { %>
