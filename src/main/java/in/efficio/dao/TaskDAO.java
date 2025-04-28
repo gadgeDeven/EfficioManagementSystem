@@ -243,15 +243,17 @@ public class TaskDAO {
     }
 
     public Task getTaskById(int taskId) {
-        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, " +
-                      "t.progress_percentage, t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen " +
-                      "FROM task t WHERE t.task_id = ?";
+        Task task = null;
+        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen, p.project_name " +
+                      "FROM task t LEFT JOIN project p ON t.project_id = p.project_id " +
+                      "WHERE t.task_id = ?";
         try (Connection con = DbConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, taskId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                Task task = new Task();
+                task = new Task();
                 task.setTaskId(rs.getInt("task_id"));
                 task.setTaskTitle(rs.getString("task_title"));
                 task.setDescription(rs.getString("description"));
@@ -262,12 +264,12 @@ public class TaskDAO {
                 task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
                 task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
                 task.setSeen(rs.getBoolean("is_seen"));
-                return task;
+                task.setProjectName(rs.getString("project_name"));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error fetching task by ID: " + taskId, e);
         }
-        return null;
+        return task;
     }
 
     public void updateTask(Task task) {
@@ -383,4 +385,96 @@ public class TaskDAO {
             LOGGER.log(Level.SEVERE, "Error marking task as seen: " + taskId, e);
         }
     }
+    
+ 
+
+    
+
+    
+
+ // Fetch tasks by employee ID and status (new method)
+    public List<Task> getTasksByEmployeeIdAndStatus(int employeeId, String status) {
+        List<Task> tasks = new ArrayList<>();
+        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen, p.project_name " +
+                      "FROM task t LEFT JOIN project p ON t.project_id = p.project_id " +
+                      "WHERE t.assigned_to_employee_id = ?" +
+                      (status != null ? " AND t.status = ?" : "");
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            if (status != null) {
+                ps.setString(2, status);
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Task task = new Task();
+                task.setTaskId(rs.getInt("task_id"));
+                task.setTaskTitle(rs.getString("task_title"));
+                task.setDescription(rs.getString("description"));
+                task.setProjectId(rs.getInt("project_id"));
+                task.setDeadlineDate(rs.getDate("deadline_date"));
+                task.setStatus(rs.getString("status"));
+                task.setProgressPercentage(rs.getInt("progress_percentage"));
+                task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
+                task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
+                task.setProjectName(rs.getString("project_name"));
+                tasks.add(task);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching tasks for employee: " + employeeId + ", status: " + status, e);
+        }
+        return tasks;
+    }
+
+    // Task count methods (from previous response)
+    public int getEmployeeTaskCount(int employeeId) {
+        int count = 0;
+        String query = "SELECT COUNT(*) AS task_count FROM task WHERE assigned_to_employee_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("task_count");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting tasks for employee: " + employeeId, e);
+        }
+        return count;
+    }
+
+    public int getEmployeePendingTaskCount(int employeeId) {
+        int count = 0;
+        String query = "SELECT COUNT(*) AS task_count FROM task WHERE assigned_to_employee_id = ? AND status = 'Pending'";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("task_count");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting pending tasks for employee: " + employeeId, e);
+        }
+        return count;
+    }
+
+    public int getEmployeeCompletedTaskCount(int employeeId) {
+        int count = 0;
+        String query = "SELECT COUNT(*) AS task_count FROM task WHERE assigned_to_employee_id = ? AND status = 'Completed'";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, employeeId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt("task_count");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error counting completed tasks for employee: " + employeeId, e);
+        }
+        return count;
+    }
+   
 }

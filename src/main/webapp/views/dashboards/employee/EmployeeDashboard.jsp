@@ -18,18 +18,7 @@
             return;
         }
         String contentType = request.getParameter("contentType") != null ? request.getParameter("contentType") : "welcome";
-        String includePath;
-        switch (contentType) {
-            case "tasks": includePath = "tasks.jsp"; break;
-            case "projects": includePath = "projects.jsp"; break;
-            case "calendar": includePath = "calendar.jsp"; break;
-            case "progress-update": includePath = "progress-update.jsp"; break;
-            case "team-members": includePath = "team-members.jsp"; break;
-            case "feedback": includePath = "feedback.jsp"; break;
-            case "notifications": includePath = "notifications.jsp"; break;
-            case "profile": includePath = "profile.jsp"; break;
-            default: includePath = "welcome.jsp"; contentType = "welcome"; break;
-        }
+        String includePath = (String) request.getAttribute("includePath") != null ? (String) request.getAttribute("includePath") : "welcome.jsp";
         Integer unseenNotifications = (Integer) request.getAttribute("unseenNotifications");
         boolean hasNotifications = unseenNotifications != null && unseenNotifications > 0;
     %>
@@ -39,16 +28,15 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-profile">
                 <img src="${pageContext.request.contextPath}/views/assets/images/admin-avtar.png" alt="Employee Avatar">
-                <h3><%= displayName %></h3>
+                <h3><%= displayName != null ? displayName : "Employee" %></h3>
             </div>
             <nav class="menu">
                 <ul>
                     <li><a href="#" id="toggleSidebar"><i class="fas fa-bars"></i> <span>Menu</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=welcome" <%= "welcome".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=tasks" <%= "tasks".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tasks"></i> <span>My Tasks</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=projects" <%= "projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-project-diagram"></i> <span>Projects</span></a></li>
+                    <li><a href="${pageContext.request.contextPath}/EmployeeTaskServlet?contentType=tasks&filter=all" <%= "tasks".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-tasks"></i> <span>My Tasks</span></a></li>
+                    <li><a href="${pageContext.request.contextPath}/EmployeeProjectServlet?contentType=projects" <%= "projects".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-project-diagram"></i> <span>Projects</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=calendar" <%= "calendar".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=progress-update" <%= "progress-update".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-edit"></i> <span>Progress Update</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=team-members" <%= "team-members".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-users"></i> <span>Team Members</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=feedback" <%= "feedback".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-comment"></i> <span>Feedback</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=notifications" <%= "notifications".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
@@ -67,7 +55,6 @@
                         : "tasks".equals(contentType) ? "fas fa-tasks" 
                         : "projects".equals(contentType) ? "fas fa-project-diagram" 
                         : "calendar".equals(contentType) ? "fas fa-calendar" 
-                        : "progress-update".equals(contentType) ? "fas fa-edit" 
                         : "team-members".equals(contentType) ? "fas fa-users" 
                         : "feedback".equals(contentType) ? "fas fa-comment" 
                         : "notifications".equals(contentType) ? "fas fa-bell" 
@@ -77,7 +64,6 @@
                         : "tasks".equals(contentType) ? "My Tasks" 
                         : "projects".equals(contentType) ? "Projects" 
                         : "calendar".equals(contentType) ? "Calendar" 
-                        : "progress-update".equals(contentType) ? "Progress Update" 
                         : "team-members".equals(contentType) ? "Team Members" 
                         : "feedback".equals(contentType) ? "Feedback" 
                         : "notifications".equals(contentType) ? "Notifications" 
@@ -102,7 +88,7 @@
                 </div>
             </header>
 
-            <!-- Notification Panel -->
+            <!-- Dashboard Content -->
             <section class="dashboard-content">
                 <div class="notification-panel" id="notificationPanel">
                     <jsp:include page="notifications.jsp" />
