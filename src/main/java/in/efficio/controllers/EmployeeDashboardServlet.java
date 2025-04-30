@@ -40,7 +40,6 @@ public class EmployeeDashboardServlet extends HttpServlet {
         // Check for employeeId
         Integer employeeId = (Integer) session.getAttribute("employeeId");
         if (employeeId == null) {
-            // Fallback: Try userId
             Integer userId = (Integer) session.getAttribute("userId");
             if (userId != null) {
                 employeeId = userId;
@@ -68,6 +67,7 @@ public class EmployeeDashboardServlet extends HttpServlet {
         if ("welcome".equals(contentType) || "productivity".equals(contentType) || "notifications".equals(contentType)) {
             request.setAttribute("includePath", "welcome".equals(contentType) ? "welcome.jsp" :
                                                "productivity".equals(contentType) ? "productivity.jsp" : "notifications.jsp");
+            LOGGER.info("Forwarding to EmployeeDashboard.jsp with includePath: " + request.getAttribute("includePath"));
             request.getRequestDispatcher("/views/dashboards/employee/EmployeeDashboard.jsp").forward(request, response);
         } else {
             // Forward to appropriate servlet based on content type
@@ -81,6 +81,7 @@ public class EmployeeDashboardServlet extends HttpServlet {
                     break;
                 case "calendar":
                     forwardPath = "/EmployeeCalendarServlet";
+                    LOGGER.info("Attempting to forward to EmployeeCalendarServlet for calendar content");
                     break;
                 case "progress-update":
                     forwardPath = "/EmployeeProgressServlet";

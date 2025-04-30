@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Use window.contextPath set by EmployeeDashboard.jsp
+    const contextPath = window.contextPath || '';
+    const currentContentType = window.currentContentType || 'welcome';
+
     const toggleSidebar = document.getElementById('toggleSidebar');
     const notificationBell = document.getElementById('notificationBell');
     const notificationPanel = document.getElementById('notificationPanel');
@@ -9,12 +13,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const pageTitle = document.getElementById('pageTitle');
     const dashboardInner = document.getElementById('dashboardInner');
 
-    // Debug: Check if elements are found
+    // Debug: Check elements
+    console.log('contextPath:', contextPath);
+    console.log('currentContentType:', currentContentType);
     console.log('notificationBell:', notificationBell);
     console.log('notificationPanel:', notificationPanel);
     console.log('closeNotification:', closeNotification);
+    console.log('profileIcon:', profileIcon);
+    console.log('profileDropdown:', profileDropdown);
 
-    // Mapping of contentType to title and icon for Team Leader Dashboard
+    // Content type mapping
     const contentTypeMap = {
         'welcome': { title: 'Dashboard', icon: 'fas fa-tachometer-alt' },
         'projects': { title: 'Projects', icon: 'fas fa-project-diagram' },
@@ -34,19 +42,22 @@ document.addEventListener('DOMContentLoaded', function() {
         'edit-task': { title: 'Edit Task', icon: 'fas fa-edit' },
         'tasks-by-project': { title: 'Tasks by Project', icon: 'fas fa-tasks' },
         'profile': { title: 'Profile', icon: 'fas fa-user' },
-        'settings': { title: 'Settings', icon: 'fas fa-cog' }
+        'settings': { title: 'Settings', icon: 'fas fa-cog' },
+        'calendar': { title: 'Calendar', icon: 'fas fa-calendar' } // Added for calendar
     };
 
-    // Function to update page title based on contentType
+    // Function to update page title
     function updatePageTitle(contentType) {
         const { title, icon } = contentTypeMap[contentType] || { title: 'Dashboard', icon: 'fas fa-tachometer-alt' };
-        pageTitle.innerHTML = `<i class="${icon}"></i> ${title}`;
+        if (pageTitle) {
+            pageTitle.innerHTML = `<i class="${icon}"></i> ${title}`;
+        }
     }
 
-    // Initialize page title based on current contentType
+    // Initialize page title
     updatePageTitle(currentContentType);
 
-    // Initialize notification panel as hidden
+    // Initialize notification panel
     if (notificationPanel) {
         notificationPanel.style.display = 'none';
         notificationPanel.classList.remove('active');
@@ -68,10 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Notification panel toggle
-    if (notificationBell && notificationPanel) {
-        notificationBell.addEventListener('click', function(e) {
-            e.preventDefault();
+    // Event delegation for notification and profile
+    document.addEventListener('click', function(e) {
+        const bell = e.target.closest('#notificationBell');
+        const profile = e.target.closest('#profileIcon');
+
+        if (bell && notificationPanel && dashboardInner) {
             console.log('Notification bell clicked');
             const isVisible = notificationPanel.style.display === 'block';
             if (!isVisible) {
@@ -90,50 +103,41 @@ document.addEventListener('DOMContentLoaded', function() {
                 dashboardInner.style.display = 'block';
                 updatePageTitle(currentContentType);
             }
-        });
-    } else {
-        console.error('notificationBell or notificationPanel missing');
-    }
+        }
 
-    // Close notification panel
+        if (profile && profileDropdown) {
+            console.log('Profile icon clicked');
+            profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Close panels on outside click
+        if (!bell && !profile && !e.target.closest('.notification-panel') && !e.target.closest('.dropdown-content')) {
+            if (notificationPanel && notificationPanel.style.display === 'block') {
+                console.log('Outside click, closing notification panel');
+                notificationPanel.style.display = 'none';
+                notificationPanel.classList.remove('active');
+                dashboardInner.style.display = 'block';
+                updatePageTitle(currentContentType);
+            }
+            if (profileDropdown && profileDropdown.style.display === 'block') {
+                console.log('Outside click, closing profile dropdown');
+                profileDropdown.style.display = 'none';
+            }
+        }
+    });
+
+    // Close notification panel (if closeNotification exists)
     if (closeNotification) {
         closeNotification.addEventListener('click', function() {
             console.log('Close notification clicked');
-            notificationPanel.style.display = 'none';
-            notificationPanel.classList.remove('active');
-            dashboardInner.style.display = 'block';
-            updatePageTitle(currentContentType);
+            if (notificationPanel && dashboardInner) {
+                notificationPanel.style.display = 'none';
+                notificationPanel.classList.remove('active');
+                dashboardInner.style.display = 'block';
+                updatePageTitle(currentContentType);
+            }
         });
     } else {
         console.warn('closeNotification not found');
-    }
-
-    // Close panel on outside click
-    if (notificationPanel) {
-        document.addEventListener('click', function(e) {
-            if (!notificationPanel.contains(e.target) && !notificationBell.contains(e.target)) {
-                if (notificationPanel.style.display === 'block') {
-                    console.log('Outside click, closing panel');
-                    notificationPanel.style.display = 'none';
-                    notificationPanel.classList.remove('active');
-                    dashboardInner.style.display = 'block';
-                    updatePageTitle(currentContentType);
-                }
-            }
-        });
-    }
-
-    // Profile dropdown toggle
-    if (profileIcon && profileDropdown) {
-        profileIcon.addEventListener('click', function(e) {
-            e.stopPropagation();
-            profileDropdown.style.display = profileDropdown.style.display === 'block' ? 'none' : 'block';
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
-                profileDropdown.style.display = 'none';
-            }
-        });
     }
 });

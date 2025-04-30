@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Dashboard | Efficio</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/employee/calendar.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/views/assets/images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -101,8 +102,9 @@
     </div>
 
     <script>
-        const contextPath = '<%= request.getContextPath() %>';
-        const currentContentType = '<%= contentType %>';
+        // Set global variables for script.js
+        window.contextPath = '<%= request.getContextPath() %>';
+        window.currentContentType = '<%= contentType %>';
     </script>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
 </body>
