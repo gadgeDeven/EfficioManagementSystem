@@ -4,66 +4,74 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Assign Task</title>
+    <title>Assign Task | Efficio</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/teamleader/assign-task.css">
-    <!-- Google Fonts for Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    
-    <div class="assign-task-container">
-        <% String errorMessage = (String) request.getAttribute("errorMessage"); %>
-        <% String employeeErrorMessage = (String) request.getAttribute("employeeErrorMessage"); %>
-        <% String successMessage = (String) request.getAttribute("successMessage"); %>
-        <% if (errorMessage != null) { %>
-            <div class="alert alert-error"><%= errorMessage %></div>
-        <% } %>
-        <% if (employeeErrorMessage != null) { %>
-            <div class="alert alert-error"><%= employeeErrorMessage %></div>
-        <% } %>
-        <% if (successMessage != null) { %>
-            <div class="alert alert-success"><%= successMessage %></div>
-        <% } %>
+<div class="progress-update-container">
+    <h1><i class="fas fa-user-check"></i> Assign Task</h1>
+    <%
+        String errorMessage = (String) request.getAttribute("errorMessage");
+        String employeeErrorMessage = (String) request.getAttribute("employeeErrorMessage");
+        String successMessage = (String) request.getAttribute("successMessage");
+    %>
+    <% if (errorMessage != null) { %>
+        <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= errorMessage %></div>
+    <% } %>
+    <% if (employeeErrorMessage != null) { %>
+        <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= employeeErrorMessage %></div>
+    <% } %>
+    <% if (successMessage != null) { %>
+        <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= successMessage %></div>
+    <% } %>
 
-        <% List<Project> projects = (List<Project>) request.getAttribute("projects"); %>
-        <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get">
-            <input type="hidden" name="contentType" value="assign-task">
-            <div class="form-group">
-                <label for="projectId">Select Project:</label>
-                <select name="projectId" id="projectId" onchange="this.form.submit()">
-                    <option value="">Select Project</option>
-                    <% if (projects != null && !projects.isEmpty()) { %>
-                        <% for (Project project : projects) { %>
-                            <option value="<%= project.getProjectId() %>"
-                                <%= request.getParameter("projectId") != null && request.getParameter("projectId").equals(String.valueOf(project.getProjectId())) ? "selected" : "" %>>
-                                <%= project.getProjectName() %>
+    <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="get" class="form-group">
+        <input type="hidden" name="contentType" value="assign-task">
+        <label for="projectId"><i class="fas fa-project-diagram"></i> Select Project:</label>
+        <select name="projectId" id="projectId" onchange="this.form.submit()" required>
+            <option value="">Select Project</option>
+            <% 
+                List<Project> projects = (List<Project>) request.getAttribute("projects"); 
+                String selectedProjectId = (String) request.getAttribute("selectedProjectId");
+                if (projects != null && !projects.isEmpty()) { 
+                    for (Project project : projects) { 
+                        if (project != null) {
+                            String selected = selectedProjectId != null && selectedProjectId.equals(String.valueOf(project.getProjectId())) ? "selected" : "";
+            %>
+                            <option value="<%= project.getProjectId() %>" <%= selected %>>
+                                <%= project.getProjectName() != null ? project.getProjectName() : "N/A" %>
                             </option>
-                        <% } %>
-                    <% } else { %>
-                        <option value="" disabled>No projects available</option>
-                    <% } %>
-                </select>
-            </div>
-        </form>
+            <% 
+                        }
+                    } 
+                } else { 
+            %>
+                    <option value="" disabled>No projects available</option>
+            <% } %>
+        </select>
+    </form>
 
-        <% String selectedProjectId = request.getParameter("projectId"); %>
-        <% if (selectedProjectId != null && !selectedProjectId.isEmpty()) { %>
-            <% List<Task> tasks = (List<Task>) request.getAttribute("tasks"); %>
-            <% List<Employee> teamMembers = (List<Employee>) request.getAttribute("teamMembers"); %>
-            <h2>Tasks for Selected Project</h2>
-            <table class="table-modern">
-                <thead>
-                    <tr>
-                        <th>Task Title</th>
-                        <th>Assigned To</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (tasks != null && !tasks.isEmpty()) { %>
+    <% if (selectedProjectId != null && !selectedProjectId.isEmpty()) { %>
+        <%
+            List<Task> tasks = (List<Task>) request.getAttribute("tasks");
+            List<Employee> teamMembers = (List<Employee>) request.getAttribute("teamMembers");
+        %>
+        <h2>Tasks for Selected Project</h2>
+        <div class="table-wrapper">
+            <% if (tasks != null && !tasks.isEmpty()) { %>
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th>Task Title</th>
+                            <th>Assigned To</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <% for (Task task : tasks) { %>
+                            <% if (task == null || task.getTaskId() == null) continue; %>
                             <tr>
                                 <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
                                 <td>
@@ -71,8 +79,8 @@
                                         String assignedTo = "Unassigned";
                                         if (task.getAssignedToEmployeeId() != null && teamMembers != null) {
                                             for (Employee emp : teamMembers) {
-                                                if (emp.getEmployee_id() == task.getAssignedToEmployeeId()) {
-                                                    assignedTo = emp.getName();
+                                                if (emp != null && task.getAssignedToEmployeeId().equals(emp.getEmployee_id())) {
+                                                    assignedTo = emp.getName() != null ? emp.getName() : "ID: " + emp.getEmployee_id();
                                                     break;
                                                 }
                                             }
@@ -85,30 +93,40 @@
                                         <input type="hidden" name="action" value="assignTask">
                                         <input type="hidden" name="taskId" value="<%= task.getTaskId() %>">
                                         <input type="hidden" name="projectId" value="<%= selectedProjectId %>">
+                                        <input type="hidden" name="contentType" value="assign-task">
                                         <select name="employeeId" required>
                                             <option value="">Select Employee</option>
-                                            <% if (teamMembers != null && !teamMembers.isEmpty()) { %>
-                                                <% for (Employee emp : teamMembers) { %>
-                                                    <option value="<%= emp.getEmployee_id() %>"
-                                                        <%= task.getAssignedToEmployeeId() != null && task.getAssignedToEmployeeId() == emp.getEmployee_id() ? "selected" : "" %>>
-                                                        <%= emp.getName() %>
-                                                    </option>
-                                                <% } %>
-                                            <% } else { %>
-                                                <option value="" disabled>No employees assigned to this project</option>
+                                            <% 
+                                                if (teamMembers != null && !teamMembers.isEmpty()) { 
+                                                    for (Employee emp : teamMembers) { 
+                                                        if (emp != null) {
+                                                            String selected = task.getAssignedToEmployeeId() != null && task.getAssignedToEmployeeId().equals(emp.getEmployee_id()) ? "selected" : "";
+                                            %>
+                                                            <option value="<%= emp.getEmployee_id() %>" <%= selected %>>
+                                                                <%= emp.getName() != null ? emp.getName() : "ID: " + emp.getEmployee_id() %>
+                                                            </option>
+                                            <% 
+                                                        }
+                                                    } 
+                                                } else { 
+                                            %>
+                                                    <option value="" disabled>No employees assigned to this project</option>
                                             <% } %>
                                         </select>
-                                        <button type="submit" class="btn-success" <%= teamMembers == null || teamMembers.isEmpty() ? "disabled" : "" %>>Assign</button>
+                                        <button type="submit" class="btn-success" <%= teamMembers == null || teamMembers.isEmpty() ? "disabled" : "" %>>
+                                            <i class="fas fa-user-check"></i> Assign
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
                         <% } %>
-                    <% } else { %>
-                        <tr><td colspan="3" class="no-data">No tasks found for this project.</td></tr>
-                    <% } %>
-                </tbody>
-            </table>
-        <% } %>
-    </div>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p class="no-data"><i class="fas fa-exclamation-circle"></i> No tasks found for this project.</p>
+            <% } %>
+        </div>
+    <% } %>
+</div>
 </body>
 </html>
