@@ -1,124 +1,128 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="in.efficio.model.Task, in.efficio.model.Project"%>
+<%@ page import="in.efficio.model.Task, in.efficio.model.Project, in.efficio.model.Employee, java.util.List, java.text.SimpleDateFormat" %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Task Details</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Task Details | Efficio</title>
+    <link rel="stylesheet" href="<%= request.getContextPath() %>/views/assets/css/employee/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <div class="task-details-container">
+    <nav class="navbar">
+        <a href="#" class="nav-brand"><i class="fas fa-info-circle"></i> Task Details</a>
+    </nav>
+    <div class="employee-details-container">
+        <%-- Alerts --%>
         <%
-            Task task = (Task) request.getAttribute("taskDetails");
-            Project project = (Project) request.getAttribute("project");
             String errorMessage = (String) request.getAttribute("errorMessage");
-            String filter = (String) request.getAttribute("filter");
-            if (filter == null) filter = "all";
+            if (errorMessage != null && !errorMessage.isEmpty()) {
         %>
-        <div class="task-header">
-            <button class="back-btn" onclick="window.location.href='${pageContext.request.contextPath}/EmployeeTaskServlet?contentType=tasks&filter=<%= filter %>'">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <h1><i class="fas fa-tasks"></i> <%= task != null && task.getTaskTitle() != null ? task.getTaskTitle() : "Task Details" %></h1>
-        </div>
-        <% if (errorMessage != null) { %>
             <div class="alert alert-error">
                 <i class="fas fa-exclamation-circle"></i> <%= errorMessage %>
             </div>
-        <% } %>
-        <% if (task == null) { %>
-            <div class="no-data">
-                <i class="fas fa-info-circle"></i> Task not found.
-            </div>
-        <% } else { %>
-            <div class="task-details">
-                <p><strong><i class="fas fa-info-circle"></i> Description:</strong> <%= task.getDescription() != null ? task.getDescription() : "N/A" %></p>
-                <p><strong><i class="fas fa-project-diagram"></i> Project:</strong> <%= project != null && project.getProjectName() != null ? project.getProjectName() : "N/A" %></p>
-                <p><strong><i class="fas fa-calendar-check"></i> Deadline:</strong> <%= task.getDeadlineDate() != null ? task.getDeadlineDate() : "N/A" %></p>
-                <p><strong><i class="fas fa-tasks"></i> Status:</strong> <%= task.getStatus() != null ? task.getStatus() : "N/A" %></p>
-                <div class="progress-bar">
-                    <label><i class="fas fa-chart-line"></i> Progress:</label>
-                    <div class="progress-container">
-                        <div class="progress" style="width: <%= task.getProgressPercentage() %>%;"></div>
+        <%
+            }
+        %>
+
+        <%-- Task Details --%>
+        <%
+            Task taskDetails = (Task) request.getAttribute("taskDetails");
+            if (taskDetails != null) {
+                Project project = (Project) request.getAttribute("project");
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+                String filter = (String) request.getAttribute("filter");
+                if (filter == null) filter = "all";
+        %>
+            <div class="proj-details">
+                <div class="proj-header">
+                    <a href="?contentType=tasks&filter=<%= filter %>" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    <h1><i class="fas fa-tasks"></i> <%= taskDetails.getTaskTitle() != null ? taskDetails.getTaskTitle() : "N/A" %></h1>
+                </div>
+                <div class="proj-details-grid">
+                    <p class="proj-description">
+                        <strong><i class="fas fa-info-circle"></i> Description:</strong> 
+                        <%= taskDetails.getDescription() != null ? taskDetails.getDescription() : "N/A" %>
+                    </p>
+                    <div class="proj-date-status-grid">
+                        <p>
+                            <strong><i class="fas fa-project-diagram"></i> Project:</strong> 
+                            <%= project != null && project.getProjectName() != null ? project.getProjectName() : "N/A" %>
+                        </p>
+                        <p>
+                            <strong><i class="fas fa-user-tie"></i> Assigned By:</strong> 
+                            <%= taskDetails.getTeamLeaderName() != null ? taskDetails.getTeamLeaderName() : "Unknown Team Leader" %>
+                        </p>
+                        <p>
+                            <strong><i class="fas fa-calendar-check"></i> Deadline:</strong> 
+                            <%= taskDetails.getDeadlineDate() != null ? sdf.format(taskDetails.getDeadlineDate()) : "N/A" %>
+                        </p>
+                        <p>
+                            <strong><i class="fas fa-tasks"></i> Status:</strong> 
+                            <%= taskDetails.getStatus() != null ? taskDetails.getStatus() : "N/A" %>
+                        </p>
                     </div>
-                    <span><%= task.getProgressPercentage() %>%</span>
+                    <div class="proj-progress-bar">
+                        <label><i class="fas fa-chart-line"></i> Progress:</label>
+                        <div class="progress-container">
+                            <div class="progress" style="width: <%= taskDetails.getProgressPercentage() %>%;"></div>
+                        </div>
+                        <span><%= taskDetails.getProgressPercentage() %>%</span>
+                    </div>
+                    <p>
+                        <strong><i class="fas fa-comment"></i> Progress Message:</strong> 
+                        <%= taskDetails.getProgressMessage() != null ? taskDetails.getProgressMessage() : "No message" %>
+                    </p>
+                </div>
+                <div class="form-actions">
+                    <a href="?action=updateProgress&taskId=<%= taskDetails.getTaskId() %>&contentType=tasks&filter=<%= filter %>" class="view-btn">
+                        <i class="fas fa-edit"></i> Update Progress
+                    </a>
+                </div>
+                <h2><i class="fas fa-users"></i> Assigned Employees</h2>
+                <div class="table-modern">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                List<Employee> employeesOnTask = (List<Employee>) request.getAttribute("employeesOnTask");
+                                if (employeesOnTask == null || employeesOnTask.isEmpty()) {
+                            %>
+                                <tr>
+                                    <td colspan="2" class="no-data">
+                                        <i class="fas fa-info-circle"></i> No employees assigned to this task.
+                                    </td>
+                                </tr>
+                            <%
+                                } else {
+                                    for (Employee employee : employeesOnTask) {
+                            %>
+                                <tr>
+                                    <td><%= employee.getEmployee_id() %></td>
+                                    <td><%= employee.getName() != null ? employee.getName() : "Unknown Employee" %></td>
+                                </tr>
+                            <%
+                                    }
+                                }
+                            %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        <% } %>
+        <%
+            } else {
+        %>
+            <p class="no-data"><i class="fas fa-exclamation-circle"></i> Task not found.</p>
+        <%
+            }
+        %>
     </div>
-    <style>
-    .task-details-container {
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 20px;
-        background: #ffffff;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-    .task-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-    .back-btn {
-        background: #00a1a7;
-        color: #ffffff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        font-size: 14px;
-        cursor: pointer;
-    }
-    .back-btn:hover {
-        background: #00888f;
-        transform: translateY(-2px);
-    }
-    .task-header h1 {
-        color: #6b48ff;
-        font-size: 28px;
-        flex: 1;
-        text-align: center;
-    }
-    .task-details p {
-        margin: 10px 0;
-        font-size: 14px;
-        color: #2d3748;
-    }
-    .task-details p strong {
-        color: #6b21a8;
-        min-width: 120px;
-        display: inline-block;
-    }
-    .progress-bar {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .progress-container {
-        width: 200px;
-        height: 10px;
-        background: #e0e0e0;
-        border-radius: 5px;
-    }
-    .progress {
-        height: 100%;
-        background: #28a745;
-        border-radius: 5px;
-    }
-    .alert-error {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 1px solid #dc3545;
-        padding: 12px;
-        border-radius: 6px;
-    }
-    .no-data {
-        font-size: 14px;
-        color: #dc3545;
-        text-align: center;
-        padding: 20px;
-    }
-    </style>
+</body>
+</html>

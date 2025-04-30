@@ -6,6 +6,7 @@ import in.efficio.dao.TaskDAO;
 import in.efficio.model.DashboardStats;
 import in.efficio.model.Project;
 import in.efficio.model.Task;
+import in.efficio.model.Employee;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -79,8 +80,11 @@ public class EmployeeTaskServlet extends HttpServlet {
                     includePath = "tasks.jsp";
                 } else {
                     Project project = projectDAO.getProjectById(task.getProjectId());
+                    List<Employee> employeesOnTask = taskDAO.getEmployeesOnTask(taskId);
                     request.setAttribute("taskDetails", task);
                     request.setAttribute("project", project);
+                    request.setAttribute("teamLeaderName", task.getTeamLeaderName());
+                    request.setAttribute("employeesOnTask", employeesOnTask);
                     includePath = "task-details.jsp";
                 }
             } catch (NumberFormatException e) {
@@ -138,6 +142,7 @@ public class EmployeeTaskServlet extends HttpServlet {
             try {
                 String taskIdStr = request.getParameter("taskId");
                 String progressStr = request.getParameter("progressPercentage");
+                String progressMessage = request.getParameter("progressMessage");
 
                 int taskId = Integer.parseInt(taskIdStr);
                 int progress = Integer.parseInt(progressStr);
@@ -153,6 +158,7 @@ public class EmployeeTaskServlet extends HttpServlet {
 
                 task.setProgressPercentage(progress);
                 task.setStatus(progress == 100 ? "Completed" : "Pending");
+                task.setProgressMessage(progressMessage);
                 taskDAO.updateTask(task);
 
                 request.setAttribute("successMessage", "Progress updated successfully!");
@@ -176,7 +182,7 @@ public class EmployeeTaskServlet extends HttpServlet {
 
         request.setAttribute("contentType", contentType);
         request.setAttribute("includePath", includePath);
-        request.getRequestDispatcher("/views/dashboards/employee/EmployeeDashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/dashboards/employee/EmployeeDashboard.jsp").forward(request , response);
     }
 
     private void updateStats(DashboardStats stats, int employeeId) {

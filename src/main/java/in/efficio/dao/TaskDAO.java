@@ -1,6 +1,7 @@
 package in.efficio.dao;
 
 import in.efficio.dbconnection.DbConnection;
+import in.efficio.model.Employee;
 import in.efficio.model.Task;
 import java.sql.*;
 import java.util.ArrayList;
@@ -242,51 +243,7 @@ public class TaskDAO {
         }
     }
 
-    public Task getTaskById(int taskId) {
-        Task task = null;
-        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
-                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen, p.project_name " +
-                      "FROM task t LEFT JOIN project p ON t.project_id = p.project_id " +
-                      "WHERE t.task_id = ?";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, taskId);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                task = new Task();
-                task.setTaskId(rs.getInt("task_id"));
-                task.setTaskTitle(rs.getString("task_title"));
-                task.setDescription(rs.getString("description"));
-                task.setProjectId(rs.getInt("project_id"));
-                task.setDeadlineDate(rs.getDate("deadline_date"));
-                task.setStatus(rs.getString("status"));
-                task.setProgressPercentage(rs.getInt("progress_percentage"));
-                task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
-                task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
-                task.setSeen(rs.getBoolean("is_seen"));
-                task.setProjectName(rs.getString("project_name"));
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error fetching task by ID: " + taskId, e);
-        }
-        return task;
-    }
-
-    public void updateTask(Task task) {
-        String query = "UPDATE task SET task_title = ?, description = ?, deadline_date = ?, status = ?, progress_percentage = ?, is_seen = FALSE WHERE task_id = ?";
-        try (Connection con = DbConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, task.getTaskTitle());
-            ps.setString(2, task.getDescription());
-            ps.setDate(3, task.getDeadlineDate());
-            ps.setString(4, task.getStatus());
-            ps.setInt(5, task.getProgressPercentage());
-            ps.setInt(6, task.getTaskId());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating task ID: " + task.getTaskId(), e);
-        }
-    }
+    
 
     public void deleteTask(int taskId) {
         Connection con = null;
@@ -475,6 +432,80 @@ public class TaskDAO {
             LOGGER.log(Level.SEVERE, "Error counting completed tasks for employee: " + employeeId, e);
         }
         return count;
+    }
+    
+    public Task getTaskById(int taskId) {
+        Task task = null;
+        String query = "SELECT t.task_id, t.task_title, t.description, t.project_id, t.deadline_date, t.status, t.progress_percentage, " +
+                      "t.assign_by_teamleader_id, t.assigned_to_employee_id, t.is_seen, p.project_name, COALESCE(tl.name, 'Unknown') AS team_leader_name, t.progress_message " +
+                      "FROM task t " +
+                      "LEFT JOIN project p ON t.project_id = p.project_id " +
+                      "LEFT JOIN team_leader tl ON t.assign_by_teamleader_id = tl.teamleader_id " +
+                      "WHERE t.task_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, taskId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                task = new Task();
+                task.setTaskId(rs.getInt("task_id"));
+                task.setTaskTitle(rs.getString("task_title"));
+                task.setDescription(rs.getString("description"));
+                task.setProjectId(rs.getInt("project_id"));
+                task.setDeadlineDate(rs.getDate("deadline_date"));
+                task.setStatus(rs.getString("status"));
+                task.setProgressPercentage(rs.getInt("progress_percentage"));
+                task.setAssignByTeamLeaderId(rs.getInt("assign_by_teamleader_id"));
+                task.setAssignedToEmployeeId(rs.getObject("assigned_to_employee_id") != null ? rs.getInt("assigned_to_employee_id") : null);
+                task.setSeen(rs.getBoolean("is_seen"));
+                task.setProjectName(rs.getString("project_name"));
+                task.setTeamLeaderName(rs.getString("team_leader_name"));
+                task.setProgressMessage(rs.getString("progress_message"));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching task by ID: " + taskId, e);
+        }
+        return task;
+    }
+
+    public List<Employee> getEmployeesOnTask(int taskId) {
+        List<Employee> employees = new ArrayList<>();
+        String query = "SELECT e.employee_id, COALESCE(e.name, 'Unknown Employee') AS name " +
+                      "FROM employee e " +
+                      "JOIN works_on wo ON e.employee_id = wo.employee_id " +
+                      "WHERE wo.task_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, taskId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Employee emp = new Employee();
+                emp.setEmployee_id(rs.getInt("employee_id"));
+                emp.setName(rs.getString("name"));
+                employees.add(emp);
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error fetching employees for task: " + taskId, e);
+        }
+        return employees;
+    }
+       
+
+    public void updateTask(Task task) {
+        String query = "UPDATE task SET task_title = ?, description = ?, deadline_date = ?, status = ?, progress_percentage = ?, is_seen = FALSE, progress_message = ? WHERE task_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, task.getTaskTitle());
+            ps.setString(2, task.getDescription());
+            ps.setDate(3, task.getDeadlineDate());
+            ps.setString(4, task.getStatus());
+            ps.setInt(5, task.getProgressPercentage());
+            ps.setString(6, task.getProgressMessage());
+            ps.setInt(7, task.getTaskId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating task ID: " + task.getTaskId(), e);
+        }
     }
    
 }
