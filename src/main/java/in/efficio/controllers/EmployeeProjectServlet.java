@@ -1,6 +1,8 @@
 package in.efficio.controllers;
 
+import in.efficio.dao.EmployeeDAO;
 import in.efficio.dao.ProjectDAO;
+import in.efficio.model.Employee;
 import in.efficio.model.Project;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,10 +18,12 @@ import java.util.logging.Logger;
 public class EmployeeProjectServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(EmployeeProjectServlet.class.getName());
     private ProjectDAO projectDAO;
+    private EmployeeDAO employeeDAO;
 
     @Override
     public void init() {
         projectDAO = new ProjectDAO();
+        employeeDAO = new EmployeeDAO();
     }
 
     @Override
@@ -53,8 +57,10 @@ public class EmployeeProjectServlet extends HttpServlet {
                     request.setAttribute("errorMessage", "Project not found or not assigned to you.");
                 } else {
                     Integer progress = projectDAO.getProjectProgress(projectId);
+                    List<Employee> assignedEmployees = employeeDAO.getEmployeesByProject(projectId);
                     request.setAttribute("projectDetails", project);
                     request.setAttribute("progress", progress);
+                    request.setAttribute("assignedEmployees", assignedEmployees);
                     request.setAttribute("action", "view");
                 }
             } catch (NumberFormatException e) {
@@ -72,6 +78,6 @@ public class EmployeeProjectServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response); // No POST actions needed for employees
+        doGet(request, response);
     }
 }
