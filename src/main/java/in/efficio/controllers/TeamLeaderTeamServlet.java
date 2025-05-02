@@ -68,6 +68,7 @@ public class TeamLeaderTeamServlet extends HttpServlet {
             for (Employee employee : teamMembers) {
                 List<Task> tasks = employeeDAO.getTasksForEmployee(employee.getEmployee_id());
                 employee.setTasks(tasks);
+                LOGGER.info("Fetched " + tasks.size() + " tasks for team member ID: " + employee.getEmployee_id());
             }
             request.setAttribute("teamMembers", teamMembers);
             request.setAttribute("teamMemberCount", teamMembers.size());
@@ -86,24 +87,36 @@ public class TeamLeaderTeamServlet extends HttpServlet {
                         List<Project> projects = employeeDAO.getProjectsForEmployee(employeeId);
                         employee.setTasks(tasks);
                         employee.setProjects(projects);
+                        // Log task details
+                        LOGGER.info("Fetched employee ID: " + employeeId + ", tasks: " + tasks.size() + ", projects: " + projects.size());
+                        for (Task task : tasks) {
+                            LOGGER.info("Task ID: " + task.getTaskId() + ", Title: " + 
+                                (task.getTaskTitle() != null ? task.getTaskTitle() : "N/A") + 
+                                ", Project: " + (task.getProjectName() != null ? task.getProjectName() : "N/A") + 
+                                ", Status: " + (task.getStatus() != null ? task.getStatus() : "N/A"));
+                        }
                         request.setAttribute("employee", employee);
-                        request.setAttribute("currentTeamLeaderId", teamLeaderId); // Pass current team leader ID
+                        request.setAttribute("currentTeamLeaderId", teamLeaderId);
                         request.setAttribute("from", request.getParameter("from"));
                         request.setAttribute("projectId", request.getParameter("projectId"));
                         includePath = "employee-details.jsp";
                     } else {
+                        LOGGER.warning("Employee not found for ID: " + employeeId);
                         request.setAttribute("errorMessage", "Employee not found.");
                         includePath = "team-members.jsp";
                     }
                 } catch (NumberFormatException e) {
+                    LOGGER.warning("Invalid employee ID format: " + employeeIdStr);
                     request.setAttribute("errorMessage", "Invalid employee ID.");
                     includePath = "team-members.jsp";
                 }
             } else {
+                LOGGER.warning("No employee ID provided for employee-details");
                 request.setAttribute("errorMessage", "No employee selected.");
                 includePath = "team-members.jsp";
             }
         } else {
+            LOGGER.info("Defaulting to team-members view");
             includePath = "team-members.jsp";
         }
 
@@ -135,6 +148,7 @@ public class TeamLeaderTeamServlet extends HttpServlet {
         request.setAttribute("stats", stats);
 
         String includePath = "team-members.jsp";
+        LOGGER.info("POST request: Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath);
         request.setAttribute("includePath", includePath);
         request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
     }

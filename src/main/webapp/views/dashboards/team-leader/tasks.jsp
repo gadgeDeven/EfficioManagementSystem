@@ -78,7 +78,7 @@
                 <tbody>
                     <%
                         for (Task task : tasks) {
-                            if (task == null || task.getTaskId() == null) continue;
+                            if (task == null || task.getTaskId() == 0) continue;
                     %>
                         <tr>
                             <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
@@ -143,7 +143,7 @@
             <% if (errorMessage != null) { %>
                 <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> <%= errorMessage %></p>
             <% } %>
-            <% if (task == null || task.getTaskId() == null) { %>
+            <% if (task == null || task.getTaskId() == 0) { %>
                 <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> Task not found.</p>
             <% } else { %>
                 <div class="proj-header">
@@ -216,43 +216,47 @@
             Task task = (Task) request.getAttribute("taskDetails");
         %>
         <div class="proj-edit">
-            <div class="proj-header">
-                <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>&taskFilter=<%= taskFilter %>&action=view&taskId=<%= task.getTaskId() %>'">
-                    <i class="fas fa-arrow-left"></i> Back
-                </button>
-                <h1><i class="fas fa-edit"></i> Edit <%= task.getTaskTitle() != null ? task.getTaskTitle() : "Task" %></h1>
-            </div>
-            <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="post">
-                <input type="hidden" name="action" value="updateTask">
-                <input type="hidden" name="taskId" value="<%= task.getTaskId() %>">
-                <input type="hidden" name="contentType" value="<%= contentType %>">
-                <input type="hidden" name="taskFilter" value="<%= taskFilter %>">
-                <div class="proj-form-group">
-                    <label><i class="fas fa-tasks"></i> Task Title:</label>
-                    <input type="text" name="taskTitle" value="<%= task.getTaskTitle() != null ? task.getTaskTitle() : "" %>" required>
+            <% if (task == null || task.getTaskId() == 0) { %>
+                <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> Task not found.</p>
+            <% } else { %>
+                <div class="proj-header">
+                    <button class="proj-back-btn" onclick="window.location.href='${pageContext.request.contextPath}/TeamLeaderTaskServlet?contentType=<%= contentType %>&taskFilter=<%= taskFilter %>&action=view&taskId=<%= task.getTaskId() %>'">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <h1><i class="fas fa-edit"></i> Edit <%= task.getTaskTitle() != null ? task.getTaskTitle() : "Task" %></h1>
                 </div>
-                <div class="proj-form-group">
-                    <label><i class="fas fa-info-circle"></i> Description:</label>
-                    <textarea name="description" required><%= task.getDescription() != null ? task.getDescription() : "" %></textarea>
-                </div>
-                <div class="proj-form-group">
-                    <label><i class="fas fa-calendar-check"></i> Deadline Date:</label>
-                    <%
-                        String deadlineDateStr = "";
-                        if (task.getDeadlineDate() != null) {
-                            try {
-                                deadlineDateStr = new SimpleDateFormat("yyyy-MM-dd").format(task.getDeadlineDate());
-                            } catch (Exception e) {
-                                deadlineDateStr = "";
+                <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="post">
+                    <input type="hidden" name="action" value="updateTask">
+                    <input type="hidden" name="taskId" value="<%= task.getTaskId() %>">
+                    <input type="hidden" name="contentType" value="<%= contentType %>">
+                    <input type="hidden" name="taskFilter" value="<%= taskFilter %>">
+                    <div class="proj-form-group">
+                        <label><i class="fas fa-tasks"></i> Task Title:</label>
+                        <input type="text" name="taskTitle" value="<%= task.getTaskTitle() != null ? task.getTaskTitle() : "" %>" required>
+                    </div>
+                    <div class="proj-form-group">
+                        <label><i class="fas fa-info-circle"></i> Description:</label>
+                        <textarea name="description" required><%= task.getDescription() != null ? task.getDescription() : "" %></textarea>
+                    </div>
+                    <div class="proj-form-group">
+                        <label><i class="fas fa-calendar-check"></i> Deadline Date:</label>
+                        <%
+                            String deadlineDateStr = "";
+                            if (task.getDeadlineDate() != null) {
+                                try {
+                                    deadlineDateStr = new SimpleDateFormat("yyyy-MM-dd").format(task.getDeadlineDate());
+                                } catch (Exception e) {
+                                    deadlineDateStr = "";
+                                }
                             }
-                        }
-                    %>
-                    <input type="date" name="deadlineDate" value="<%= deadlineDateStr %>" required>
-                </div>
-                <div class="proj-form-actions">
-                    <button type="submit" class="proj-btn"><i class="fas fa-save"></i> Save Changes</button>
-                </div>
-            </form>
+                        %>
+                        <input type="date" name="deadlineDate" value="<%= deadlineDateStr %>" required>
+                    </div>
+                    <div class="proj-form-actions">
+                        <button type="submit" class="proj-btn"><i class="fas fa-save"></i> Save Changes</button>
+                    </div>
+                </form>
+            <% } %>
         </div>
     <% } %>
 </div>

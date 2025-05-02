@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.util.List;
 
 public class Task {
-    private Integer taskId;
+    private int taskId; // Changed from Integer to int
     private String taskTitle;
     private String description;
     private Integer projectId;
@@ -15,13 +15,13 @@ public class Task {
     private Integer assignByTeamLeaderId;
     private Integer assignedToEmployeeId;
     private Boolean isSeen;
-    private String teamLeaderName; // New field
-    private List<Employee> employeesOnTask; // New field
-    private String progressMessage; // New field
+    private String teamLeaderName;
+    private List<Employee> employeesOnTask;
+    private String progressMessage;
 
     // Getters and Setters
-    public Integer getTaskId() { return taskId; }
-    public void setTaskId(Integer taskId) { this.taskId = taskId; }
+    public int getTaskId() { return taskId; } // Changed to return int
+    public void setTaskId(int taskId) { this.taskId = taskId; } // Changed to accept int
     public String getTaskTitle() { return taskTitle; }
     public void setTaskTitle(String taskTitle) { this.taskTitle = taskTitle; }
     public String getDescription() { return description; }

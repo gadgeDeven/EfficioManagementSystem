@@ -100,48 +100,50 @@
                     </tbody>
                 </table>
                 <!-- Tasks Section -->
-                <h2><i class="fas fa-tasks"></i> Assigned Tasks</h2>
-                <table class="table-modern">
-                    <thead>
+<h2><i class="fas fa-tasks"></i> Assigned Tasks</h2>
+<table class="table-modern">
+    <thead>
+        <tr>
+            <th><i class="fas fa-id-card"></i> Task ID</th>
+            <th><i class="fas fa-clipboard"></i> Task Title</th>
+            <th><i class="fas fa-folder-open"></i> Project Name</th>
+            <th><i class="fas fa-info-circle"></i> Status</th>
+            <th><i class="fas fa-calendar-alt"></i> Deadline</th>
+            <th><i class="fas fa-cog"></i> Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%
+            List<Task> tasks = employee.getTasks();
+            if (tasks != null && !tasks.isEmpty()) {
+                for (Task task : tasks) {
+                    if (task != null) {
+        %>
                         <tr>
-                            <th><i class="fas fa-id-card"></i> Task ID</th>
-                            <th><i class="fas fa-clipboard"></i> Task Title</th>
-                            <th><i class="fas fa-folder-open"></i> Project Name</th>
-                            <th><i class="fas fa-info-circle"></i> Status</th>
-                            <th><i class="fas fa-calendar-alt"></i> Deadline</th>
-                            <th><i class="fas fa-cog"></i> Action</th>
+                            <td><%= task.getTaskId() != 0 ? task.getTaskId() : "N/A" %></td>
+                            <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
+                            <td><%= task.getProjectName() != null ? task.getProjectName() : "N/A" %></td>
+                            <td><%= task.getStatus() != null ? task.getStatus() : "N/A" %></td>
+                            <td><%= task.getDeadlineDate() != null ? task.getDeadlineDate() : "N/A" %></td>
+                            <td>
+                                <a href="<%=request.getContextPath()%>/TeamLeaderTaskServlet?contentType=tasks&action=view&taskId=<%=task.getTaskId()%>" class="action-btn">
+                                    <i class="fas fa-eye"></i> View Task
+                                </a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <%
-                            List<Task> tasks = employee.getTasks();
-                            if (tasks != null && !tasks.isEmpty()) {
-                                for (Task task : tasks) {
-                        %>
-                                    <tr>
-                                        <td><%= task.getTaskId() %></td>
-                                        <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
-                                        <td><%= task.getProjectName() != null ? task.getProjectName() : "N/A" %></td>
-                                        <td><%= task.getStatus() != null ? task.getStatus() : "N/A" %></td>
-                                        <td><%= task.getDeadlineDate() != null ? task.getDeadlineDate() : "N/A" %></td>
-                                        <td>
-                                            <a href="<%=request.getContextPath()%>/TeamLeaderTaskServlet?contentType=tasks&action=view&taskId=<%=task.getTaskId()%>" class="action-btn">
-                                                <i class="fas fa-eye"></i> View Task
-                                            </a>
-                                        </td>
-                                    </tr>
-                        <%
-                                }
-                            } else {
-                        %>
-                                <tr>
-                                    <td colspan="6">No tasks assigned</td>
-                                </tr>
-                        <%
-                            }
-                        %>
-                    </tbody>
-                </table>
+        <%
+                    }
+                }
+            } else {
+        %>
+                    <tr>
+                        <td colspan="6">No tasks assigned</td>
+                    </tr>
+        <%
+            }
+        %>
+    </tbody>
+</table>
         <%
             } else {
         %>
