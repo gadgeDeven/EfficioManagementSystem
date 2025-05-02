@@ -85,7 +85,7 @@
                                         <tr>
                                             <td><span class="employee-name"><i class="fas fa-user"></i><%= emp.getName() != null ? emp.getName() : "N/A" %></span></td>
                                             <td><%= emp.getEmail() != null ? emp.getEmail() : "N/A" %></td>
-                                            <td><%= emp.getMobileNumber() != null ? emp.getMobileNumber() : "N/A" %></td>
+                                            <td><%= emp.getMobile_number() != null ? emp.getMobile_number() : "N/A" %></td>
                                             <td><%= emp.getDept_name() != null ? emp.getDept_name() : "N/A" %></td>
                                             <td><%= emp.getTeamLeader_name() != null ? emp.getTeamLeader_name() : "N/A" %></td>
                                         </tr>

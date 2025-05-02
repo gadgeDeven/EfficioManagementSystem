@@ -40,8 +40,6 @@
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=calendar" <%= "calendar".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-calendar"></i> <span>Calendar</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=team-members" <%= "team-members".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-users"></i> <span>Team Members</span></a></li>
                     <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=feedback" <%= "feedback".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-comment"></i> <span>Feedback</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=notifications" <%= "notifications".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
-                    <li><a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=profile" <%= "profile".equals(contentType) ? "class='active'" : "" %>><i class="fas fa-user"></i> <span>Profile Settings</span></a></li>
                     <li class="logout"><a href="${pageContext.request.contextPath}/LogoutServlet"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
                 </ul>
             </nav>
@@ -60,6 +58,7 @@
                         : "feedback".equals(contentType) ? "fas fa-comment" 
                         : "notifications".equals(contentType) ? "fas fa-bell" 
                         : "profile".equals(contentType) ? "fas fa-user" 
+                        : "settings".equals(contentType) ? "fas fa-cog" 
                         : "fas fa-tachometer-alt" %>"></i>
                     <%= "welcome".equals(contentType) ? "Dashboard" 
                         : "tasks".equals(contentType) ? "My Tasks" 
@@ -68,7 +67,8 @@
                         : "team-members".equals(contentType) ? "Team Members" 
                         : "feedback".equals(contentType) ? "Feedback" 
                         : "notifications".equals(contentType) ? "Notifications" 
-                        : "profile".equals(contentType) ? "Profile Settings" 
+                        : "profile".equals(contentType) ? "Profile" 
+                        : "settings".equals(contentType) ? "Settings" 
                         : "Dashboard" %>
                 </h2>
                 <div class="icons">
@@ -81,6 +81,7 @@
                     <div class="profile">
                         <img src="${pageContext.request.contextPath}/views/assets/images/admin.png" alt="Profile" id="profileIcon">
                         <div class="dropdown-content" id="profileDropdown">
+                            <a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=notifications"><i class="fas fa-bell"></i> Notifications</a>
                             <a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=profile"><i class="fas fa-user"></i> View Profile</a>
                             <a href="${pageContext.request.contextPath}/EmployeeDashboardServlet?contentType=settings"><i class="fas fa-cog"></i> Settings</a>
                             <a href="${pageContext.request.contextPath}/LogoutServlet"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -102,7 +103,6 @@
     </div>
 
     <script>
-        // Set global variables for script.js
         window.contextPath = '<%= request.getContextPath() %>';
         window.currentContentType = '<%= contentType %>';
     </script>
