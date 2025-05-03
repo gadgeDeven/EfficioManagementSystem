@@ -108,6 +108,6 @@
         window.currentContentType = '<%= contentType %>';
     </script>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
-    <script src="${pageContext.request.contextPath}/views/assets/js/employee/notifications.js"></script>
+    
 </body>
 </html>
