@@ -1,4 +1,3 @@
-
 package in.efficio.controllers;
 
 import in.efficio.dao.EmployeeDAO;
@@ -26,6 +25,7 @@ public class TeamLeaderDashboard extends HttpServlet {
         employeeDAO = new EmployeeDAO();
         projectDAO = new ProjectDAO();
         taskDAO = new TaskDAO();
+        LOGGER.info("Initializing TeamLeaderDashboard");
     }
 
     @Override
@@ -33,16 +33,23 @@ public class TeamLeaderDashboard extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("userName") == null) {
+            LOGGER.warning("Session is null or userName is not set, redirecting to LogoutServlet");
             response.sendRedirect(
                     request.getContextPath() + "/LogoutServlet?message=Session Expired! Please login again.");
             return;
         }
 
         String teamLeaderEmail = (String) session.getAttribute("userName");
-        int teamLeaderId = projectDAO.getTeamLeaderIdByEmail(teamLeaderEmail);
-        if (teamLeaderId == -1) {
-            response.sendRedirect(request.getContextPath() + "/LogoutServlet?message=Invalid Team Leader.");
-            return;
+        Integer teamLeaderId = (Integer) session.getAttribute("teamLeaderId");
+        if (teamLeaderId == null) {
+            teamLeaderId = projectDAO.getTeamLeaderIdByEmail(teamLeaderEmail);
+            if (teamLeaderId == -1) {
+                LOGGER.severe("Invalid team leader for email: " + teamLeaderEmail);
+                response.sendRedirect(request.getContextPath() + "/LogoutServlet?message=Invalid Team Leader.");
+                return;
+            }
+            session.setAttribute("teamLeaderId", teamLeaderId);
+            LOGGER.info("Set teamLeaderId: " + teamLeaderId + " for user: " + teamLeaderEmail);
         }
 
         // Prepare DashboardStats
@@ -57,39 +64,66 @@ public class TeamLeaderDashboard extends HttpServlet {
         request.setAttribute("contentType", contentType);
 
         // Handle dashboard-related content types
-        if ("welcome".equals(contentType) || "productivity".equals(contentType) || "notifications".equals(contentType)) {
-            request.setAttribute("includePath", "welcome".equals(contentType) ? "welcome.jsp" : 
-                                               "productivity".equals(contentType) ? "productivity.jsp" : "notifications.jsp");
-            request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
-        } else {
-            // Forward to appropriate servlet based on content type
-            String forwardPath;
-            switch (contentType) {
-                case "projects":
-                case "pending-projects":
-                case "completed-projects":
-                    forwardPath = "/TeamLeaderProjectServlet";
-                    break;
-                case "tasks":
-                case "pending-tasks":
-                case "completed-tasks":
-                case "create-task":
-                case "tasks-by-project":
-                case "assign-task":
-                    forwardPath = "/TeamLeaderTaskServlet";
-                    break;
-                case "assign-projects":
-                    forwardPath = "/TeamLeaderAssignmentServlet";
-                    break;
-                case "team-members":
-                case "employee-details":
-                    forwardPath = "/TeamLeaderTeamServlet";
-                    break;
-                default:
-                    forwardPath = "/TeamLeaderWelcome";
-            }
+        String includePath = null;
+        String forwardPath = null;
+        switch (contentType) {
+            case "welcome":
+                includePath = "/views/dashboards/team-leader/welcome.jsp";
+                break;
+            case "profile":
+                forwardPath = "/TeamLeaderProfileServlet";
+                break;
+            case "productivity":
+                includePath = "/views/dashboards/team-leader/productivity.jsp";
+                break;
+            case "notifications":
+                includePath = "/views/dashboards/team-leader/notifications.jsp";
+                break;
+            case "settings":
+                forwardPath = "/TeamLeaderProfileServlet";
+                break;
+            case "projects":
+            case "pending-projects":
+            case "completed-projects":
+                forwardPath = "/TeamLeaderProjectServlet";
+                break;
+            case "tasks":
+            case "pending-tasks":
+            case "completed-tasks":
+            case "create-task":
+            case "tasks-by-project":
+            case "assign-task":
+                forwardPath = "/TeamLeaderTaskServlet";
+                break;
+            case "assign-projects":
+                forwardPath = "/TeamLeaderAssignmentServlet";
+                break;
+            case "team-members":
+            case "employee-details":
+                forwardPath = "/TeamLeaderTeamServlet";
+                break;
+            default:
+                LOGGER.warning("Unknown contentType: " + contentType + ", defaulting to welcome");
+                includePath = "/views/dashboards/team-leader/welcome.jsp";
+                contentType = "welcome";
+                request.setAttribute("contentType", contentType);
+                break;
+        }
+
+        if (forwardPath != null) {
             LOGGER.info("Forwarding to: " + forwardPath + " with contentType: " + contentType);
             request.getRequestDispatcher(forwardPath).forward(request, response);
+        } else {
+            // Verify includePath exists
+            if (getServletContext().getResource(includePath) == null) {
+                LOGGER.severe("Include path not found: " + includePath);
+                request.setAttribute("message", "Error: Dashboard content not found");
+                request.setAttribute("alertType", "error");
+                includePath = "/views/dashboards/common/error.jsp";
+            }
+            request.setAttribute("includePath", includePath);
+            LOGGER.info("Forwarding to TeamLeaderDashboard.jsp with includePath: " + includePath);
+            request.getRequestDispatcher("/views/dashboards/team-leader/TeamLeaderDashboard.jsp").forward(request, response);
         }
     }
 
@@ -104,4 +138,6 @@ public class TeamLeaderDashboard extends HttpServlet {
         int totalTasks = stats.getPendingTaskCount() + stats.getCompletedTaskCount();
         stats.setProductivity(totalTasks > 0 ? (stats.getCompletedTaskCount() * 100.0) / totalTasks : 0);
     }
+
+    
 }

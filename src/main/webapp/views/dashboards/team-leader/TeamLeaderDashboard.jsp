@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="in.efficio.model.DashboardStats, java.util.List, in.efficio.model.Task"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,6 +61,7 @@
                         : "task-details".equals(contentType) ? "fas fa-tasks" 
                         : "edit-task".equals(contentType) ? "fas fa-edit" 
                         : "tasks-by-project".equals(contentType) ? "fas fa-tasks" 
+                        : "settings".equals(contentType) ? "fas fa-cog" 
                         : "fas fa-tachometer-alt" %>"></i>
                     <%= "welcome".equals(contentType) ? "Dashboard" 
                         : "projects".equals(contentType) ? "Projects" 
@@ -80,6 +80,7 @@
                         : "task-details".equals(contentType) ? "Task Details" 
                         : "edit-task".equals(contentType) ? "Edit Task" 
                         : "tasks-by-project".equals(contentType) ? "Tasks by Project" 
+                        : "settings".equals(contentType) ? "Settings" 
                         : "Dashboard" %>
                 </h2>
                 <div class="icons">
