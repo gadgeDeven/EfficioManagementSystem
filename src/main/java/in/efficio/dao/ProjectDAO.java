@@ -167,11 +167,15 @@ public class ProjectDAO {
     }
     
     public void updateProjectProgress(int projectId, int progress) {
-        String sql = "UPDATE project SET progress = ? WHERE project_id = ?";
-        try (Connection conn =  DbConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, progress);
-            stmt.setInt(2, projectId);
-            stmt.executeUpdate();
+        String query = "UPDATE project SET progress = ?, status = ? WHERE project_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, progress);
+            String newStatus = progress == 100 ? "Completed" : "Pending";
+            ps.setString(2, newStatus);
+            ps.setInt(3, projectId);
+            int rowsAffected = ps.executeUpdate();
+            
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -504,6 +508,33 @@ public class ProjectDAO {
             e.printStackTrace();
         }
         return projects;
+    }
+    
+    public int calculateProjectProgress(int projectId) {
+        String query = "SELECT COUNT(*) AS total_tasks, " +
+                      "SUM(progress_percentage) AS total_progress " +
+                      "FROM task WHERE project_id = ?";
+        try (Connection con = DbConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, projectId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int totalTasks = rs.getInt("total_tasks");
+                int totalProgress = rs.getInt("total_progress");
+                
+                if (totalTasks == 0) {
+                    return 0; // No tasks, so progress is 0%
+                }
+                int progress = totalProgress / totalTasks; // Average progress percentage
+                
+                return progress;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            
+        }
+        
+        return 0; // Default to 0 if error or no tasks
     }
     
    

@@ -60,12 +60,12 @@
                         <p><strong><i class="fas fa-exclamation-triangle"></i> Priority:</strong> <%= project.getPriority() != null ? project.getPriority() : "N/A" %></p>
                     </div>
                     <div class="proj-progress-bar">
-                        <label><i class="fas fa-chart-line"></i> Progress:</label>
-                        <div class="progress-container">
-                            <div class="progress" style="width: <%= progress != null ? progress : 0 %>%;"></div>
-                        </div>
-                        <span><%= progress != null ? progress : 0 %>%</span>
-                    </div>
+    <label><i class="fas fa-chart-line"></i> Progress:</label>
+    <div class="progress-container">
+        <div class="progress" style="width: <%= progress != null ? progress : 0 %>%;"></div>
+    </div>
+    <span><%= progress != null ? progress : 0 %>%</span>
+</div>
                     <!-- Assigned Employees Section -->
                     <div class="team-section">
                         <h3><i class="fas fa-users"></i> Assigned Employees</h3>

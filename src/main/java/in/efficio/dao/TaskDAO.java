@@ -30,9 +30,15 @@ public class TaskDAO {
             ps.setInt(6, task.getProgressPercentage());
             ps.setInt(7, teamLeaderId);
             ps.setNull(8, java.sql.Types.INTEGER);
-            ps.setBoolean(9, false); // New tasks are unseen
+            ps.setBoolean(9, false);
             int rowsAffected = ps.executeUpdate();
             System.out.println("Task inserted, rows affected: " + rowsAffected);
+
+            // Update project progress
+            ProjectDAO projectDAO = new ProjectDAO();
+            int progress = projectDAO.calculateProjectProgress(task.getProjectId());
+            projectDAO.updateProjectProgress(task.getProjectId(), progress);
+
             return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -251,16 +257,36 @@ public class TaskDAO {
             con = DbConnection.getConnection();
             con.setAutoCommit(false);
 
+            // Get project_id before deleting task
+            String getProjectQuery = "SELECT project_id FROM task WHERE task_id = ?";
+            int projectId = -1;
+            try (PreparedStatement ps = con.prepareStatement(getProjectQuery)) {
+                ps.setInt(1, taskId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    projectId = rs.getInt("project_id");
+                }
+            }
+
+            // Delete from works_on
             String deleteWorksOnQuery = "DELETE FROM works_on WHERE task_id = ?";
             try (PreparedStatement ps = con.prepareStatement(deleteWorksOnQuery)) {
                 ps.setInt(1, taskId);
                 ps.executeUpdate();
             }
 
+            // Delete task
             String deleteTaskQuery = "DELETE FROM task WHERE task_id = ?";
             try (PreparedStatement ps = con.prepareStatement(deleteTaskQuery)) {
                 ps.setInt(1, taskId);
                 ps.executeUpdate();
+            }
+
+            // Update project progress
+            if (projectId != -1) {
+                ProjectDAO projectDAO = new ProjectDAO();
+                int progress = projectDAO.calculateProjectProgress(projectId);
+                projectDAO.updateProjectProgress(projectId, progress);
             }
 
             con.commit();
@@ -503,9 +529,13 @@ public class TaskDAO {
             ps.setString(6, task.getProgressMessage());
             ps.setInt(7, task.getTaskId());
             ps.executeUpdate();
+
+            // Update project progress
+            ProjectDAO projectDAO = new ProjectDAO();
+            int progress = projectDAO.calculateProjectProgress(task.getProjectId());
+            projectDAO.updateProjectProgress(task.getProjectId(), progress);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating task ID: " + task.getTaskId(), e);
         }
     }
-   
 }

@@ -85,10 +85,7 @@ public class TeamLeaderProjectServlet extends HttpServlet {
                 int projectId = Integer.parseInt(projectIdStr);
                 selectedProject = projectDAO.getProjectById(projectId);
                 if (selectedProject == null || !projects.stream().anyMatch(p -> p.getProjectId() == projectId)) {
-                    request.setAttribute("errorMessage",
-                            (contentType != null && contentType.equals("pending-projects") ? "Pending" :
-                             contentType != null && contentType.equals("completed-projects") ? "Completed" : "") +
-                            " project not found or not assigned to you.");
+                    request.setAttribute("errorMessage", "Project not found or not assigned to you.");
                 } else {
                     Integer progress = projectDAO.getProjectProgress(projectId);
                     List<TeamLeader> teamLeaders = projectDAO.getAssignedTeamLeaders(projectId);
