@@ -42,10 +42,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <%
-                            for (Task task : tasks) {
-                                if (task == null || task.getTaskId() == null) continue;
-                        %>
+                        <% for (Task task : tasks) { %>
+                            <% 
+                                if (task == null) {
+                                    System.out.println("Task is null in tasks-for-project.jsp");
+                                    continue;
+                                }
+                                Integer taskId = null;
+                                try {
+                                    taskId = task.getTaskId();
+                                    if (taskId == null) {
+                                        System.out.println("Task ID is null for task: " + task.getTaskTitle());
+                                        continue;
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Error accessing getTaskId() for task: " + task.getTaskTitle() + ", Error: " + e.getMessage());
+                                    continue;
+                                }
+                            %>
                             <tr>
                                 <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
                                 <td><%= task.getDescription() != null ? task.getDescription() : "N/A" %></td>

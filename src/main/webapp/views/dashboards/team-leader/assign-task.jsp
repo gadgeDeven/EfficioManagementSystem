@@ -71,7 +71,23 @@
                     </thead>
                     <tbody>
                         <% for (Task task : tasks) { %>
-                            <% if (task == null || task.getTaskId() == null) continue; %>
+                            <% 
+                                if (task == null) {
+                                    System.out.println("Task is null in assign-task.jsp");
+                                    continue;
+                                }
+                                Integer taskId = null;
+                                try {
+                                    taskId = task.getTaskId();
+                                    if (taskId == null) {
+                                        System.out.println("Task ID is null for task: " + task.getTaskTitle());
+                                        continue;
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("Error accessing getTaskId() for task: " + task.getTaskTitle() + ", Error: " + e.getMessage());
+                                    continue;
+                                }
+                            %>
                             <tr>
                                 <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
                                 <td>
@@ -91,7 +107,7 @@
                                 <td>
                                     <form action="${pageContext.request.contextPath}/TeamLeaderTaskServlet" method="post">
                                         <input type="hidden" name="action" value="assignTask">
-                                        <input type="hidden" name="taskId" value="<%= task.getTaskId() %>">
+                                        <input type="hidden" name="taskId" value="<%= taskId %>">
                                         <input type="hidden" name="projectId" value="<%= selectedProjectId %>">
                                         <input type="hidden" name="contentType" value="assign-task">
                                         <select name="employeeId" required>

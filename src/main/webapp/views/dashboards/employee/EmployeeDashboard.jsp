@@ -7,6 +7,7 @@
     <title>Employee Dashboard | Efficio</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/employee/calendar.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/employee/notifications.css">
     <link rel="icon" type="image/x-icon" href="${pageContext.request.contextPath}/views/assets/images/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
@@ -107,5 +108,6 @@
         window.currentContentType = '<%= contentType %>';
     </script>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
+    <script src="${pageContext.request.contextPath}/views/assets/js/employee/notifications.js"></script>
 </body>
 </html>

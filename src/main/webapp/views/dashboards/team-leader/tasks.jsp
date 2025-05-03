@@ -78,7 +78,7 @@
                 <tbody>
                     <%
                         for (Task task : tasks) {
-                            if (task == null || task.getTaskId() == 0) continue;
+                            if (task == null || task.getTaskId() == null) continue;
                     %>
                         <tr>
                             <td><%= task.getTaskTitle() != null ? task.getTaskTitle() : "N/A" %></td>
