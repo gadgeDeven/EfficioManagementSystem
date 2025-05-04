@@ -10,9 +10,10 @@
 </head>
 <body>
     <div class="employee-list-container">
-        <h2><i class="fas fa-users"></i> Team Members</h2>
+
         <% List<Employee> teamMembers = (List<Employee>) request.getAttribute("teamMembers"); %>
         <% List<Project> projects = (List<Project>) request.getAttribute("projects"); %>
+        <p class="total-employees"><i class="fas fa-users"></i> Total Team Members: <%= teamMembers.size() %></p>
         <% String selectedProjectId = (String) request.getAttribute("selectedProjectId"); %>
 
         <!-- Project Filter Dropdown -->
@@ -60,7 +61,7 @@
                     </tbody>
                 </table>
             </div>
-            <p class="total-employees"><i class="fas fa-users"></i> Total Team Members: <%= teamMembers.size() %></p>
+            
         <% } else { %>
             <p class="no-data"><i class="fas fa-exclamation-circle"></i> No team members found for your projects.</p>
         <% } %>

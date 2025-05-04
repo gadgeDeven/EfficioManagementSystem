@@ -5,16 +5,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Tasks | Efficio</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/views/assets/css/employee/dashboard.css">
+    <!-- Base styling ke liye lists.css -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/lists.css">
+
+    <!-- Font Awesome icons ke liye -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="#" class="nav-brand"><i class="fas fa-tasks"></i> Your Tasks</a>
-    </nav>
+    <!-- Task list ka main container -->
     <div class="employee-list-container">
-        <h1><i class="fas fa-tasks"></i> Your Tasks</h1>
-        <%-- Alerts --%>
+
+        <%-- Success ya error messages ke liye alerts --%>
         <%
             String successMessage = (String) request.getAttribute("successMessage");
             String errorMessage = (String) request.getAttribute("errorMessage");
@@ -34,7 +35,7 @@
             }
         %>
 
-        <%-- Task Count --%>
+        <%-- Total tasks count display (right-aligned) --%>
         <%
             DashboardStats stats = (DashboardStats) request.getAttribute("stats");
             if (stats != null) {
@@ -46,14 +47,14 @@
             }
         %>
 
-        <%-- Filter Buttons --%>
-        <div style="margin-bottom: 20px; text-align: center;">
+        <%-- Task filtering ke liye buttons (right-aligned) --%>
+        <div class="filter-buttons">
             <%
                 String filter = (String) request.getAttribute("filter");
                 if (filter == null) filter = "all";
-                String allClass = "action-btn" + ("all".equals(filter) ? " active" : "");
-                String pendingClass = "action-btn" + ("pending".equals(filter) ? " active" : "");
-                String completedClass = "action-btn" + ("completed".equals(filter) ? " active" : "");
+                String allClass = "view-btn" + ("all".equals(filter) ? " active" : "");
+                String pendingClass = "view-btn" + ("pending".equals(filter) ? " active" : "");
+                String completedClass = "view-btn" + ("completed".equals(filter) ? " active" : "");
             %>
             <a href="?contentType=tasks&filter=all" class="<%= allClass %>">
                 <i class="fas fa-list"></i> All Tasks
@@ -66,11 +67,11 @@
             </a>
         </div>
 
-        <%-- Task Table --%>
+        <%-- Tasks display ke liye table --%>
         <div class="table-wrapper">
             <table class="table-modern">
                 <thead>
-                    <tr>
+                    <tr id="heading">
                         <th>Task Title</th>
                         <th>Project</th>
                         <th>Deadline</th>

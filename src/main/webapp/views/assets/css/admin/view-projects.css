@@ -207,7 +207,7 @@ tr:hover td {
     margin: 0;
 }
 
-.proj-header h1 {
+.proj-header h1, h3 {
     font-size: 1.9rem;
     font-weight: 600;
     color: var(--proj-details-primary);
@@ -649,3 +649,7 @@ tr:hover td {
         max-width: 100%;
     }
 }
+
+
+
+

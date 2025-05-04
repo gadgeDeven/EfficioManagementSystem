@@ -5,27 +5,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Task Details | Efficio</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/views/assets/css/employee/dashboard.css">
+    <!-- Project-specific styling ke liye view-projects.css -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/view-projects.css">
+    <!-- Font Awesome icons ke liye -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="#" class="nav-brand"><i class="fas fa-info-circle"></i> Task Details</a>
-    </nav>
-    <div class="employee-details-container">
-        <%-- Alerts --%>
+    <!-- Task details ka main container -->
+    <div class="proj-list-container">
+        <%-- Error messages ke liye alert --%>
         <%
             String errorMessage = (String) request.getAttribute("errorMessage");
             if (errorMessage != null && !errorMessage.isEmpty()) {
         %>
-            <div class="alert alert-error">
+            <p class="proj-no-data">
                 <i class="fas fa-exclamation-circle"></i> <%= errorMessage %>
-            </div>
+            </p>
         <%
             }
         %>
 
-        <%-- Task Details --%>
+        <%-- Task details display --%>
         <%
             Task taskDetails = (Task) request.getAttribute("taskDetails");
             if (taskDetails != null) {
@@ -36,7 +36,7 @@
         %>
             <div class="proj-details">
                 <div class="proj-header">
-                    <a href="?contentType=tasks&filter=<%= filter %>" class="back-btn">
+                    <a href="?contentType=tasks&filter=<%= filter %>" class="proj-back-btn">
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                     <h1><i class="fas fa-tasks"></i> <%= taskDetails.getTaskTitle() != null ? taskDetails.getTaskTitle() : "N/A" %></h1>
@@ -71,55 +71,43 @@
                         </div>
                         <span><%= taskDetails.getProgressPercentage() %>%</span>
                     </div>
-                    <p>
+                    <p class="proj-description">
                         <strong><i class="fas fa-comment"></i> Progress Message:</strong> 
                         <%= taskDetails.getProgressMessage() != null ? taskDetails.getProgressMessage() : "No message" %>
                     </p>
                 </div>
-                <div class="form-actions">
-                    <a href="?action=updateProgress&taskId=<%= taskDetails.getTaskId() %>&contentType=tasks&filter=<%= filter %>" class="view-btn">
+                <div class="proj-actions">
+                    <a href="?action=updateProgress&taskId=<%= taskDetails.getTaskId() %>&contentType=tasks&filter=<%= filter %>" class="proj-btn">
                         <i class="fas fa-edit"></i> Update Progress
                     </a>
                 </div>
-                <h2><i class="fas fa-users"></i> Assigned Employees</h2>
-                <div class="table-modern">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Employee ID</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%
-                                List<Employee> employeesOnTask = (List<Employee>) request.getAttribute("employeesOnTask");
-                                if (employeesOnTask == null || employeesOnTask.isEmpty()) {
-                            %>
-                                <tr>
-                                    <td colspan="2" class="no-data">
-                                        <i class="fas fa-info-circle"></i> No employees assigned to this task.
-                                    </td>
-                                </tr>
-                            <%
-                                } else {
-                                    for (Employee employee : employeesOnTask) {
-                            %>
-                                <tr>
-                                    <td><%= employee.getEmployee_id() %></td>
-                                    <td><%= employee.getName() != null ? employee.getName() : "Unknown Employee" %></td>
-                                </tr>
-                            <%
-                                    }
-                                }
-                            %>
-                        </tbody>
-                    </table>
+                <h3><i class="fas fa-users"></i> Assigned Employees</h3>
+                <div class="proj-employee-list">
+                    <%
+                        List<Employee> employeesOnTask = (List<Employee>) request.getAttribute("employeesOnTask");
+                        if (employeesOnTask == null || employeesOnTask.isEmpty()) {
+                    %>
+                        <p class="proj-no-data">
+                            <i class="fas fa-info-circle"></i> No employees assigned to this task.
+                        </p>
+                    <%
+                        } else {
+                            for (Employee employee : employeesOnTask) {
+                    %>
+                        <div class="proj-employee-item">
+                            <p><strong>Employee ID:</strong> <%= employee.getEmployee_id() %></p>
+                            <p><strong>Name:</strong> <%= employee.getName() != null ? employee.getName() : "Unknown Employee" %></p>
+                        </div>
+                    <%
+                            }
+                        }
+                    %>
                 </div>
             </div>
         <%
             } else {
         %>
-            <p class="no-data"><i class="fas fa-exclamation-circle"></i> Task not found.</p>
+            <p class="proj-no-data"><i class="fas fa-exclamation-circle"></i> Task not found.</p>
         <%
             }
         %>
