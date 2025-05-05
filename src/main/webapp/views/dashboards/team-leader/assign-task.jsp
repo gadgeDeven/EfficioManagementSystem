@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="progress-update-container">
-    <h1><i class="fas fa-user-check"></i> Assign Task</h1>
+
     <%
         String errorMessage = (String) request.getAttribute("errorMessage");
         String employeeErrorMessage = (String) request.getAttribute("employeeErrorMessage");

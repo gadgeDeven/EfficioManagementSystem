@@ -1,7 +1,5 @@
-<%@page import="in.efficio.dao.PendingRegistrationDAO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="in.efficio.model.DashboardStats, java.util.List, in.efficio.model.Project, in.efficio.dao.PendingRegistrationDAO"%>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,12 +21,9 @@
         DashboardStats stats = (DashboardStats) request.getAttribute("stats");
         if (stats == null) stats = new DashboardStats();
         
-        // Get contentType, default to welcome
         String contentType = request.getParameter("contentType") != null ? request.getParameter("contentType") : "welcome";
         String lastContentType = (String) session.getAttribute("lastContentType");
         
-        
-        // Update session
         session.setAttribute("lastContentType", contentType);
         request.setAttribute("contentType", contentType);
 
@@ -38,7 +33,6 @@
     %>
 
     <div class="container">
-        <!-- Debug output -->
         <div style="background: #ffe6e6; padding: 10px; margin: 10px; border: 1px solid red;">
             <p>Debug: contentType=<%=contentType%>, lastContentType=<%=lastContentType%></p>
         </div>
@@ -119,7 +113,7 @@
                 <div class="notification-panel" id="notificationPanel" style="display: <%= "notifications".equals(contentType) ? "block" : "none" %>;">
                     <jsp:include page="notifications.jsp" />
                 </div>
-                <div class="dashboard-inner" id="dashboardInner">
+                <div class="dashboard-inner" id="dashboardInner" style="margin-top: -25px;">
                     <% if ("welcome".equals(contentType)) { %>
                         <h1><i class="fas fa-handshake"></i> Welcome, <%=userName%>!</h1>
                         <div class="stats-container">
@@ -247,13 +241,10 @@
             </section>
         </main>
     </div>
-     <script>
+    <script>
         const contextPath = '<%=request.getContextPath()%>';
         const currentContentType = '<%=contentType%>';
     </script>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
 </body>
 </html>
-
-   
-   
