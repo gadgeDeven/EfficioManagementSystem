@@ -22,87 +22,27 @@
         String userName = (String) session.getAttribute("userName");
         DashboardStats stats = (DashboardStats) request.getAttribute("stats");
         if (stats == null) stats = new DashboardStats();
-        String contentType = request.getParameter("contentType");
-        if (contentType == null) contentType = "welcome";
+        
+        // Get contentType, default to welcome
+        String contentType = request.getParameter("contentType") != null ? request.getParameter("contentType") : "welcome";
+        String lastContentType = (String) session.getAttribute("lastContentType");
+        
+        
+        // Update session
+        session.setAttribute("lastContentType", contentType);
+        request.setAttribute("contentType", contentType);
+
         String from = request.getParameter("from");
         PendingRegistrationDAO pendingDAO = new PendingRegistrationDAO();
         boolean hasUnseen = pendingDAO.hasUnseenRegistrations();
-
-        // Store last contentType in session to handle back/forward navigation
-        session.setAttribute("lastContentType", contentType);
-
-        // Determine page title and icon
-        String iconClass;
-        String pageTitle;
-        switch (contentType) {
-            case "welcome":
-                iconClass = "fas fa-tachometer-alt";
-                pageTitle = "Dashboard";
-                break;
-            case "view-employees":
-                iconClass = "fas fa-users";
-                pageTitle = "View Employees";
-                break;
-            case "employee-profile":
-                iconClass = "fas fa-users";
-                pageTitle = "Employee Profile";
-                break;
-            case "view-teamleaders":
-                iconClass = "fas fa-user-tie";
-                pageTitle = "View Team Leaders";
-                break;
-            case "teamleader-profile":
-                iconClass = "fas fa-user-tie";
-                pageTitle = "Team Leader Profile";
-                break;
-            case "create-projects":
-                iconClass = "fas fa-folder-plus";
-                pageTitle = "Create Projects";
-                break;
-            case "view-projects":
-                iconClass = "fas fa-eye";
-                pageTitle = "View Projects";
-                break;
-            case "assign-team-leaders":
-                iconClass = "fas fa-user-tie";
-                pageTitle = "Assign Team Leaders";
-                break;
-            case "project-team-leaders":
-                iconClass = "fas fa-project-diagram";
-                pageTitle = "Project Team Leaders";
-                break;
-            case "adminsList":
-                iconClass = "fas fa-user-shield";
-                pageTitle = "Admins List";
-                break;
-            case "projectsList":
-                iconClass = "fas fa-project-diagram";
-                pageTitle = "All Projects";
-                break;
-            case "pendingList":
-                iconClass = "fas fa-tasks";
-                pageTitle = "Pending Projects";
-                break;
-            case "completedList":
-                iconClass = "fas fa-check-circle";
-                pageTitle = "Completed Projects";
-                break;
-            case "productivityList":
-                iconClass = "fas fa-chart-line";
-                pageTitle = "Productivity";
-                break;
-            case "notifications":
-                iconClass = "fas fa-bell";
-                pageTitle = "Pending Requests";
-                break;
-            default:
-                iconClass = "fas fa-tachometer-alt";
-                pageTitle = "Dashboard";
-                break;
-        }
     %>
 
     <div class="container">
+        <!-- Debug output -->
+        <div style="background: #ffe6e6; padding: 10px; margin: 10px; border: 1px solid red;">
+            <p>Debug: contentType=<%=contentType%>, lastContentType=<%=lastContentType%></p>
+        </div>
+
         <aside class="sidebar">
             <div class="sidebar-profile">
                 <img src="${pageContext.request.contextPath}/views/assets/images/admin-avtar.png" alt="Admin Avatar">
@@ -124,10 +64,43 @@
 
         <main class="main-content">
             <header class="topbar">
-                <h2 id="pageTitle"><i class="<%= iconClass %>"></i> <%= pageTitle %></h2>
+                <h2 id="pageTitle">
+                    <i class="<%= "welcome".equals(contentType) ? "fas fa-tachometer-alt" 
+                        : "view-employees".equals(contentType) ? "fas fa-users" 
+                        : "employee-profile".equals(contentType) ? "fas fa-users" 
+                        : "view-teamleaders".equals(contentType) ? "fas fa-user-tie" 
+                        : "teamleader-profile".equals(contentType) ? "fas fa-user-tie" 
+                        : "create-projects".equals(contentType) ? "fas fa-folder-plus" 
+                        : "view-projects".equals(contentType) ? "fas fa-eye" 
+                        : "assign-team-leaders".equals(contentType) ? "fas fa-user-tie" 
+                        : "project-team-leaders".equals(contentType) ? "fas fa-project-diagram" 
+                        : "adminsList".equals(contentType) ? "fas fa-user-shield" 
+                        : "projectsList".equals(contentType) ? "fas fa-project-diagram" 
+                        : "pendingList".equals(contentType) ? "fas fa-tasks" 
+                        : "completedList".equals(contentType) ? "fas fa-check-circle" 
+                        : "productivityList".equals(contentType) ? "fas fa-chart-line" 
+                        : "notifications".equals(contentType) ? "fas fa-bell" 
+                        : "fas fa-tachometer-alt" %>"></i>
+                    <%= "welcome".equals(contentType) ? "Dashboard" 
+                        : "view-employees".equals(contentType) ? "View Employees" 
+                        : "employee-profile".equals(contentType) ? "Employee Profile" 
+                        : "view-teamleaders".equals(contentType) ? "View Team Leaders" 
+                        : "teamleader-profile".equals(contentType) ? "Team Leader Profile" 
+                        : "create-projects".equals(contentType) ? "Create Projects" 
+                        : "view-projects".equals(contentType) ? "View Projects" 
+                        : "assign-team-leaders".equals(contentType) ? "Assign Team Leaders" 
+                        : "project-team-leaders".equals(contentType) ? "Project Team Leaders" 
+                        : "adminsList".equals(contentType) ? "Admins List" 
+                        : "projectsList".equals(contentType) ? "All Projects" 
+                        : "pendingList".equals(contentType) ? "Pending Projects" 
+                        : "completedList".equals(contentType) ? "Completed Projects" 
+                        : "productivityList".equals(contentType) ? "Productivity" 
+                        : "notifications".equals(contentType) ? "Pending Requests" 
+                        : "Dashboard" %>
+                </h2>
                 <div class="icons">
                     <div class="notification">
-                        <a href="javascript:void(0)" id="notificationBell">
+                        <a href="${pageContext.request.contextPath}/DashboardServlet?contentType=notifications" id="notificationBell">
                             <i class="fas fa-bell"></i>
                             <span class="update-dot" id="notificationDot" style="display: <%= hasUnseen ? "block" : "none" %>;"></span>
                         </a>
@@ -143,7 +116,7 @@
             </header>
 
             <section class="dashboard-content">
-                <div class="notification-panel" id="notificationPanel">
+                <div class="notification-panel" id="notificationPanel" style="display: <%= "notifications".equals(contentType) ? "block" : "none" %>;">
                     <jsp:include page="notifications.jsp" />
                 </div>
                 <div class="dashboard-inner" id="dashboardInner">
@@ -263,18 +236,24 @@
                         <div class="project-team-leaders">
                             <jsp:include page="project-team-leaders.jsp" />
                         </div>
-                    <% } else if (!"notifications".equals(contentType)) { %>
+                    <% } else if ("notifications".equals(contentType)) { %>
+                        <div class="notifications">
+                            <jsp:include page="notifications.jsp" />
+                        </div>
+                    <% } else { %>
                         <p>Coming soon! This feature will be implemented later.</p>
                     <% } %>
                 </div>
             </section>
         </main>
     </div>
-
-    <script>
+     <script>
         const contextPath = '<%=request.getContextPath()%>';
         const currentContentType = '<%=contentType%>';
     </script>
     <script src="${pageContext.request.contextPath}/views/assets/js/admin/script.js"></script>
 </body>
 </html>
+
+   
+   

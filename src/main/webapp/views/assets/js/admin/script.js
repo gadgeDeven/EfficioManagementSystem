@@ -141,3 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
         console.warn('closeNotification not found');
     }
 });
+
+
+       const contextPath = '<%=request.getContextPath()%>';
+       const currentContentType = '<%=contentType%>';
+       console.log('admin-dashboard.jsp: currentContentType=', '<%=contentType%>');
+       // Debug: Log when pageTitle changes
+       window.addEventListener('DOMContentLoaded', () => {
+           const pageTitle = document.getElementById('pageTitle');
+           console.log('Initial pageTitle:', pageTitle.innerHTML);
+           // Monitor changes to pageTitle
+           const observer = new MutationObserver((mutations) => {
+               mutations.forEach((mutation) => {
+                   console.log('pageTitle changed to:', pageTitle.innerHTML);
+               });
+           });
+           observer.observe(pageTitle, { childList: true, subtree: true });
+       });
