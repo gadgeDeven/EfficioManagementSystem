@@ -15,5 +15,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ForDownload"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ForMail"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
