@@ -2,7 +2,7 @@
 <%@ page import="java.util.List, in.efficio.model.PendingRegistration, in.efficio.dao.PendingRegistrationDAO"%>
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/views/assets/css/admin/notifications.css">
-
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 <div class="notification-content">
     <button class="close-btn" id="closeNotification"><i class="fas fa-times"></i></button>
